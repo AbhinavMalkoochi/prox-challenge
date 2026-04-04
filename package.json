@@ -1,0 +1,49 @@
+{
+  "name": "vulcan-omnipro-copilot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multimodal support agent for the Vulcan OmniPro 220.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "ingest": "tsx scripts/ingest.ts",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbhinavMalkoochi/prox-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AbhinavMalkoochi/prox-challenge/issues"
+  },
+  "homepage": "https://github.com/AbhinavMalkoochi/prox-challenge#readme",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.92",
+    "@anthropic-ai/sdk": "^0.82.0",
+    "lucide-react": "^1.7.0",
+    "minisearch": "^7.2.0",
+    "next": "^16.2.2",
+    "pdfjs-dist": "^5.6.205",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.2",
+    "jsdom": "^29.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  }
+}

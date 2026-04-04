@@ -1,0 +1,26 @@
+{
+  "manuals": [
+    {
+      "id": "owner-manual",
+      "title": "Owner's Manual & Safety Instructions",
+      "kind": "manual",
+      "filename": "owner-manual.pdf",
+      "sizeLabel": "6.5 MB"
+    },
+    {
+      "id": "quick-start-guide",
+      "title": "Quick Start Guide",
+      "kind": "guide",
+      "filename": "quick-start-guide.pdf",
+      "sizeLabel": "893.2 KB"
+    },
+    {
+      "id": "selection-chart",
+      "title": "Process Selection Chart",
+      "kind": "chart",
+      "filename": "selection-chart.pdf",
+      "sizeLabel": "2.1 MB"
+    }
+  ],
+  "generatedAssetsReady": false
+}
