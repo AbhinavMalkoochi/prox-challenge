@@ -231,6 +231,99 @@ a {
   cursor: pointer;
 }
 
+.secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 12px 18px;
+  color: var(--text);
+}
+
+.source-page-shell {
+  width: min(1320px, calc(100vw - 48px));
+  margin: 0 auto;
+  padding: 32px 0 72px;
+}
+
+.source-page-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.source-page-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.source-page-copy {
+  margin: 12px 0 0;
+  color: var(--muted);
+  max-width: 60ch;
+  line-height: 1.65;
+}
+
+.source-page-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.source-page-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.quote-panel {
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 18px;
+  color: #e4e4e7;
+  line-height: 1.75;
+}
+
+.quote-panel blockquote {
+  margin: 0;
+}
+
+.source-panel {
+  overflow: auto;
+}
+
+.source-viewer-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+}
+
+.source-viewer-frame canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.source-highlight-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.source-highlight {
+  position: absolute;
+  border-radius: 6px;
+  background: rgba(249, 115, 22, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.65);
+}
+
 @media (max-width: 980px) {
   .page-shell {
     width: min(100vw - 28px, 1320px);
@@ -240,6 +333,16 @@ a {
   .hero,
   .content-grid {
     grid-template-columns: 1fr;
+  }
+
+  .source-page-shell {
+    width: min(100vw - 28px, 1320px);
+  }
+
+  .source-page-header,
+  .source-page-layout {
+    grid-template-columns: 1fr;
+    display: grid;
   }
 
   .panel.full-width {

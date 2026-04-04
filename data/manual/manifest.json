@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-04-04T22:29:51.740Z",
+  "manuals": [
+    {
+      "id": "owner-manual",
+      "title": "Owner's Manual & Safety Instructions",
+      "filename": "owner-manual.pdf",
+      "kind": "manual",
+      "priority": 1,
+      "pageCount": 48
+    },
+    {
+      "id": "quick-start-guide",
+      "title": "Quick Start Guide",
+      "filename": "quick-start-guide.pdf",
+      "kind": "guide",
+      "priority": 2,
+      "pageCount": 2
+    },
+    {
+      "id": "selection-chart",
+      "title": "Process Selection Chart",
+      "filename": "selection-chart.pdf",
+      "kind": "chart",
+      "priority": 3,
+      "pageCount": 1
+    }
+  ],
+  "chunkCount": 445,
+  "pageCount": 51
+}

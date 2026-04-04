@@ -1,21 +1,11 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-
-import { getKnowledgeOverview } from "../lib/knowledge/overview";
+import { generateKnowledgeBase, writeKnowledgeBase } from "../lib/knowledge/ingest";
 
 async function main() {
-  const overview = await getKnowledgeOverview();
-  const outputDirectory = path.join(process.cwd(), "data", "manual");
-
-  await mkdir(outputDirectory, { recursive: true });
-  await writeFile(
-    path.join(outputDirectory, "overview.json"),
-    `${JSON.stringify(overview, null, 2)}\n`,
-    "utf8"
-  );
+  const knowledgeBase = await generateKnowledgeBase();
+  await writeKnowledgeBase(knowledgeBase);
 
   process.stdout.write(
-    `Wrote ${overview.manuals.length} manual definitions to data/manual/overview.json\n`
+    `Wrote ${knowledgeBase.pages.length} pages and ${knowledgeBase.chunks.length} chunks to data/manual\n`
   );
 }
 
