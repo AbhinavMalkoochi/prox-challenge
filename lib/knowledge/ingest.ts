@@ -75,25 +75,22 @@ function buildLineText(items: ManualTextItem[]): string {
 }
 
 function buildLines(items: ManualTextItem[]): ManualLine[] {
-  const sortedItems = [...items].sort((left, right) => {
-    const yDelta = left.y - right.y;
-
-    if (Math.abs(yDelta) > 4) {
-      return yDelta;
-    }
-
-    return left.x - right.x;
+  const indexed = items.map((item, i) => ({ item, idx: i }));
+  indexed.sort((a, b) => {
+    const yDelta = a.item.y - b.item.y;
+    if (Math.abs(yDelta) > 4) return yDelta;
+    return a.item.x - b.item.x;
   });
 
   const lines: ManualLine[] = [];
 
-  for (const item of sortedItems) {
+  for (const { item, idx } of indexed) {
     const currentLine = lines.at(-1);
 
     if (!currentLine || Math.abs(currentLine.y - item.y) > 4) {
       lines.push({
         text: item.text,
-        itemIndexes: [items.indexOf(item)],
+        itemIndexes: [idx],
         y: item.y,
         x: item.x,
         width: item.width,
@@ -102,7 +99,7 @@ function buildLines(items: ManualTextItem[]): ManualLine[] {
       continue;
     }
 
-    currentLine.itemIndexes.push(items.indexOf(item));
+    currentLine.itemIndexes.push(idx);
     currentLine.x = Math.min(currentLine.x, item.x);
     currentLine.width = Math.max(currentLine.width, item.x + item.width - currentLine.x);
     currentLine.height = Math.max(currentLine.height, item.height);
@@ -149,7 +146,8 @@ function createChunks(page: ManualPage, manualTitle: string, manualKind: string)
 
   const chunks: ManualChunk[] = [];
   const chunkSize = 8;
-  const overlap = 2;
+  const isTable = page.sourceKind === "table" || page.sourceKind === "chart";
+  const overlap = isTable ? 4 : 2;
 
   for (let startIndex = 0; startIndex < page.lines.length; startIndex += chunkSize - overlap) {
     const selectedLines = page.lines.slice(startIndex, startIndex + chunkSize);

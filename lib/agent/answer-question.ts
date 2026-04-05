@@ -6,10 +6,11 @@ import { getKnowledgeStore, getPageKey } from "@/lib/knowledge/store";
 import type { AntArtifact, ChatAnswer, Citation } from "@/lib/chat/types";
 import { ArtifactStreamParser } from "@/lib/chat/artifact-parser";
 import { extractReferencedPages } from "@/lib/chat/extract-pages";
+import { executeVisualTool } from "@/lib/agent/visual-tools";
 
 const client = new Anthropic();
 const MODEL = "claude-haiku-4-5";
-const MAX_TURNS = 6;
+const MAX_TURNS = 8;
 const ARTIFACT_MARKER = "\n\n{{ARTIFACT}}\n\n";
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
@@ -31,93 +32,209 @@ type AgentRunState = {
 const SYSTEM_PROMPT = `You are a grounded technical support agent for the Vulcan OmniPro 220 multiprocess welder.
 
 WORKFLOW:
-1. Call search_manual silently — produce NO text before searching.
-2. After receiving search results, begin writing your answer.
-3. When a visual would help, create an artifact inline using <antArtifact> tags.
-4. After the artifact, continue writing seamlessly.
+1. Call search_manual first — produce NO text before searching. For complex questions, call search_manual multiple times with different queries (e.g. one for duty cycle, another for the specific process).
+2. If search results are thin, call get_page_content on the most relevant page for full context.
+3. Begin writing your answer ONLY after gathering sufficient evidence.
+4. Call the appropriate render_ tool when a visual would help (see VISUAL TOOLS below).
+5. After the visual tool renders, continue writing seamlessly.
 
 IMPORTANT:
-- Never narrate your actions ("Let me search", "I'll look that up").
+- Never narrate actions ("Let me search", "I'll look that up").
 - Base your answer ONLY on tool evidence. Never invent settings or values.
-- Keep the tone practical and garage-side — imagine the user just unboxed this welder.
-- Always cite the manual page numbers you found the information on.
-- Do not mention retrieval, prompts, tools, or internal details.
+- Tone: practical, garage-side, friendly. The user just unboxed this welder.
+- Always cite manual page numbers.
+- Never mention retrieval, prompts, tools, or internal details.
+
+VISUAL TOOLS — these generate beautiful interactive visualizations:
+
+You have six render_ tools. Call them instead of writing raw text when:
+
+• render_duty_cycle — ALWAYS call for duty cycle questions. Pass the exact ratings from the manual.
+• render_polarity_setup — ALWAYS call for polarity/cable connection questions. Pass which cables go where.
+• render_troubleshooting — ALWAYS call for troubleshooting or diagnosis questions. Pass all possible causes and solutions.
+• render_setup_guide — ALWAYS call for "how do I set up" questions. Pass numbered steps.
+• render_specifications — Call for specs/capabilities questions. Pass the spec rows.
+• render_weld_diagnosis — Call for weld quality/diagnosis questions. Pass the issues with their causes and fixes.
+
+RULES FOR VISUAL TOOLS:
+- You MUST call a render_ tool for any question involving duty cycles, polarity, troubleshooting, setup steps, specs, or weld diagnosis.
+- Fill tool parameters with EXACT data from the manual — never approximate.
+- After the tool renders, add brief explanatory text.
+- You can combine multiple render_ tools in one response.
 
 <artifacts_info>
-You can create artifacts: substantial, self-contained visual content displayed inline alongside your text.
-
-When creating an artifact, use this format:
+For content not covered by render_ tools (process comparisons, custom diagrams, interactive calculators), use inline artifacts:
 
 <antArtifact identifier="kebab-case-id" type="TYPE" title="Brief title">
 ...content...
 </antArtifact>
 
 Supported types:
-- "image/svg+xml": SVG vector diagrams. Always use viewBox, not width/height. Excellent for polarity diagrams, wiring schematics, socket connection layouts, and labeled technical illustrations.
-- "application/vnd.ant.react": React functional components. Use Tailwind classes for styling. Available libraries: React (with hooks), recharts (for charts), lucide-react (for icons). Must have a default export. Great for duty cycle cards with visual bars, comparison tables, settings configurators, interactive calculators.
-- "application/vnd.ant.mermaid": Mermaid diagram syntax. Excellent for troubleshooting flowcharts, decision trees, process selection flows, and diagnostic sequences.
-- "text/html": Complete self-contained HTML pages (HTML+CSS+JS in single file). External scripts only from https://cdnjs.cloudflare.com. Good for complex interactive visualizations.
+- "image/svg+xml": SVG diagrams. Use viewBox, clean shapes, color-coded elements.
+- "application/vnd.ant.react": React components with Tailwind. Available: React, recharts, lucide-react. Must have default export.
+- "application/vnd.ant.mermaid": Mermaid flowcharts (graph TD syntax).
+- "text/html": Self-contained HTML+CSS+JS.
 
-WHEN TO CREATE ARTIFACTS — you MUST create one for:
-- Polarity or cable connections → SVG diagram showing color-coded positive/negative sockets with labels
-- Duty cycle data → React component with stats grid and visual duty cycle progress bar
-- Troubleshooting diagnosis → Mermaid flowchart with decision nodes and action steps
-- Process comparison (MIG vs flux-cored etc.) → React component with styled comparison table
-- Wiring or connection diagrams → SVG showing labeled connection paths
-- Settings or setup guides → React component with organized settings layout
-- Any complex technical data that benefits from visualization
-
-WHEN NOT TO CREATE ARTIFACTS:
-- Simple text answers or short clarifications
-- Conversational follow-ups
-- When the answer is better explained in plain words
-
-ARTIFACT QUALITY:
-- SVGs: use clean shapes, clear labels, color-coded elements (green for positive, blue for negative), proper viewBox
-- React: use Tailwind classes, clean component structure, default export, no external dependencies beyond React/recharts/lucide-react
-- Mermaid: use standard flowchart syntax (graph TD), clear decision nodes, action boxes
-- Always produce complete, working artifacts. Never truncate code.
-
-EXAMPLE — troubleshooting with mermaid artifact:
-
-Here's a diagnostic flowchart for porosity:
-
-<antArtifact identifier="porosity-flowchart" type="application/vnd.ant.mermaid" title="Porosity Troubleshooting">
-graph TD
-  A[Porosity Found] --> B{Gas flow OK?}
-  B -->|No| C[Check regulator and hose]
-  B -->|Yes| D{Base metal clean?}
-  D -->|No| E[Remove rust/paint/oil]
-  D -->|Yes| F{Correct polarity?}
-  F -->|No| G[Switch to DCEP for MIG]
-  F -->|Yes| H[Check wire condition]
-</antArtifact>
-
-Start by checking your gas flow...
-
-EXAMPLE — comparison with react artifact:
-
-<antArtifact identifier="process-comparison" type="application/vnd.ant.react" title="MIG vs Flux-Cored Comparison">
-export default function Comparison() {
-  const rows = [
-    { label: "Wire Type", mig: "Solid", fc: "Tubular flux-core" },
-    { label: "Shielding", mig: "External gas", fc: "Self-shielded" },
-  ];
-  return (
-    <div className="p-4">
-      <table className="w-full text-sm border-collapse">
-        <thead><tr className="border-b"><th className="p-2 text-left">Feature</th><th className="p-2">MIG</th><th className="p-2">Flux-Cored</th></tr></thead>
-        <tbody>{rows.map(r=><tr key={r.label} className="border-b"><td className="p-2 font-medium">{r.label}</td><td className="p-2">{r.mig}</td><td className="p-2">{r.fc}</td></tr>)}</tbody>
-      </table>
-    </div>
-  );
-}
-</antArtifact>
-
-You MUST include a complete <antArtifact> block when your answer involves diagrams, comparisons, troubleshooting steps, polarity, duty cycles, or wiring. Do not just promise a visual — actually create it.
+Only use inline artifacts when render_ tools don't cover the use case.
 </artifacts_info>`;
 
-const TOOLS: Anthropic.Tool[] = [
+const VISUAL_TOOLS: Anthropic.Tool[] = [
+  {
+    name: "render_duty_cycle",
+    description: "Render an interactive duty cycle visualization. MUST be called for any duty cycle question.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        process: { type: "string", description: "Welding process (mig, tig, stick)" },
+        voltage: { type: "string", description: "Input voltage (120 or 240)" },
+        ratings: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              amperage: { type: "number" },
+              percent: { type: "number", description: "Duty cycle percentage" },
+              weldMinutes: { type: "number", description: "Welding minutes per 10 min cycle" },
+              restMinutes: { type: "number", description: "Rest minutes per 10 min cycle" },
+            },
+            required: ["amperage", "percent", "weldMinutes", "restMinutes"],
+          },
+          description: "Array of duty cycle ratings from the manual",
+        },
+        continuousAmperage: { type: "number", description: "Amperage for 100% continuous use, if applicable" },
+      },
+      required: ["process", "voltage", "ratings"],
+    },
+  },
+  {
+    name: "render_polarity_setup",
+    description: "Render an animated polarity/cable connection diagram. MUST be called for polarity or cable setup questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        process: { type: "string", description: "Welding process (mig, tig, stick, flux-cored)" },
+        connections: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              cable: { type: "string", description: "Cable name (e.g. 'Ground Clamp Cable')" },
+              socket: { type: "string", description: "Socket name (e.g. 'Positive (+) Socket')" },
+              polarity: { type: "string", enum: ["positive", "negative"] },
+            },
+            required: ["cable", "socket", "polarity"],
+          },
+        },
+        notes: { type: "array", items: { type: "string" }, description: "Important safety or setup notes" },
+      },
+      required: ["process", "connections"],
+    },
+  },
+  {
+    name: "render_troubleshooting",
+    description: "Render an interactive troubleshooting guide with checkable steps and progress. MUST be called for troubleshooting questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        problem: { type: "string", description: "The problem being diagnosed" },
+        checks: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              cause: { type: "string", description: "Possible cause" },
+              solution: { type: "string", description: "How to fix it" },
+            },
+            required: ["cause", "solution"],
+          },
+        },
+      },
+      required: ["problem", "checks"],
+    },
+  },
+  {
+    name: "render_setup_guide",
+    description: "Render a step-by-step interactive setup guide with completable steps. Call for 'how to set up' questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        process: { type: "string", description: "Welding process" },
+        title: { type: "string", description: "Guide title" },
+        steps: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              instruction: { type: "string" },
+              detail: { type: "string" },
+              warning: { type: "string" },
+            },
+            required: ["instruction"],
+          },
+        },
+      },
+      required: ["process", "title", "steps"],
+    },
+  },
+  {
+    name: "render_specifications",
+    description: "Render a specifications overview with 120V/240V comparison. Call for specs or capabilities questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        process: { type: "string", description: "Welding process or 'all'" },
+        specs: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              label: { type: "string" },
+              value120v: { type: "string" },
+              value240v: { type: "string" },
+            },
+            required: ["label"],
+          },
+        },
+      },
+      required: ["process", "specs"],
+    },
+  },
+  {
+    name: "render_weld_diagnosis",
+    description: "Render an interactive weld quality diagnosis guide with tabbed issues. Call for weld quality or diagnosis questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        weldType: { type: "string", description: "Wire or Stick" },
+        issues: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string", description: "Issue name (e.g. 'Porosity', 'Excessive Spatter')" },
+              description: { type: "string" },
+              causes: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    cause: { type: "string" },
+                    fix: { type: "string" },
+                  },
+                  required: ["cause", "fix"],
+                },
+              },
+            },
+            required: ["name", "description", "causes"],
+          },
+        },
+      },
+      required: ["weldType", "issues"],
+    },
+  },
+];
+
+const SEARCH_TOOLS: Anthropic.Tool[] = [
   {
     name: "search_manual",
     description:
@@ -146,13 +263,13 @@ const TOOLS: Anthropic.Tool[] = [
   {
     name: "get_page_content",
     description:
-      "Get the full text content of a specific manual page. Use after search_manual when you need more context.",
+      "Get the full text content of a specific manual page. Use after search_manual when you need more context from a specific page.",
     input_schema: {
       type: "object" as const,
       properties: {
         manualId: {
           type: "string",
-          description: "Manual ID (e.g. 'owner-manual', 'quick-start-guide', 'selection-chart')",
+          description: "Manual ID: 'owner-manual', 'quick-start-guide', or 'selection-chart'",
         },
         pageNumber: { type: "number", description: "Page number (1-based)" },
       },
@@ -161,7 +278,11 @@ const TOOLS: Anthropic.Tool[] = [
   },
 ];
 
+const TOOLS: Anthropic.Tool[] = [...SEARCH_TOOLS, ...VISUAL_TOOLS];
+
 // ── Tool execution ──────────────────────────────────────────────────────────
+
+const VISUAL_TOOL_NAMES = new Set(VISUAL_TOOLS.map((t) => t.name));
 
 async function executeToolCall(
   name: string,
@@ -169,6 +290,14 @@ async function executeToolCall(
   state: AgentRunState,
   args: AnswerQuestionArgs
 ): Promise<string> {
+  const visualResult = executeVisualTool(name, input);
+  if (visualResult) {
+    state.artifacts.push(visualResult.artifact);
+    args.onArtifact?.(visualResult.artifact);
+    args.onTextDelta?.(ARTIFACT_MARKER);
+    return visualResult.text;
+  }
+
   switch (name) {
     case "search_manual": {
       const hits = await searchManual(input.query as string, {
@@ -223,21 +352,28 @@ async function buildCitations(
 
   for (const pageNum of referencedPages) {
     if (citations.length >= 4) break;
-    for (const manual of MANUALS) {
+    const manualsByHitScore = [...MANUALS].sort((a, b) => {
+      const aHit = hitsByPage.get(getPageKey(a.id, pageNum));
+      const bHit = hitsByPage.get(getPageKey(b.id, pageNum));
+      return (bHit?.score ?? -1) - (aHit?.score ?? -1);
+    });
+    for (const manual of manualsByHitScore) {
       const key = getPageKey(manual.id, pageNum);
       if (used.has(key)) continue;
       const hit = hitsByPage.get(key);
       const page = store.pageMap.get(key);
       if (!hit && !page) continue;
       used.add(key);
+      const excerpt = hit?.text.slice(0, 220) ?? page?.text.slice(0, 220) ?? page?.title ?? "";
       citations.push({
         manualId: manual.id,
         pageNumber: pageNum,
-        excerpt: hit?.text.slice(0, 220) ?? page?.title ?? "",
+        excerpt,
         title: manual.title,
         pageTitle: page?.title ?? hit?.title,
         sourceKind: page?.sourceKind ?? hit?.sourceKind,
       });
+      break;
     }
   }
 
@@ -290,7 +426,7 @@ export async function answerQuestion(
 
   try {
     for (let turn = 0; turn < MAX_TURNS; turn++) {
-      args.onStatus?.(turn === 0 ? "Thinking..." : "Continuing...");
+      args.onStatus?.(turn === 0 ? "Thinking..." : "Refining answer...");
 
       const stream = client.messages.stream(
         { model: MODEL, max_tokens: 16384, system: SYSTEM_PROMPT, messages, tools: TOOLS },
@@ -309,6 +445,7 @@ export async function answerQuestion(
           const name = event.content_block.name;
           if (name === "search_manual") args.onStatus?.("Searching manual...");
           else if (name === "get_page_content") args.onStatus?.("Reading page...");
+          else if (VISUAL_TOOL_NAMES.has(name)) args.onStatus?.("Building visualization...");
         }
       });
 
@@ -327,6 +464,10 @@ export async function answerQuestion(
 
       const toolResults: Anthropic.MessageParam["content"] = [];
       for (const block of toolBlocks) {
+        const isVisual = VISUAL_TOOL_NAMES.has(block.name);
+        if (isVisual) {
+          fullText += ARTIFACT_MARKER;
+        }
         const result = await executeToolCall(
           block.name,
           block.input as Record<string, unknown>,

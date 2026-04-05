@@ -589,12 +589,23 @@
     "manualKind": "manual",
     "pageNumber": 7,
     "title": "Specifications",
-    "text": "Welding Current Range 30–140A 30–220A 40% @ 100A 25% @ 200A Rated Duty Cycles 100% @ 75A 100% @ 115A Maximum OCV 86VDC S l Mild Steel, Stainless Steel Weldable Materials",
-    "normalizedText": "welding current range 30–140a 30–220a 40% @ 100a 25% @ 200a rated duty cycles 100% @ 75a 100% @ 115a maximum ocv 86vdc s l mild steel, stainless steel weldable materials",
+    "text": "Sa Current Input at Output 20.8A at 100A 25.5A at 200A Welding Current Range 30–140A 30–220A 40% @ 100A 25% @ 200A Rated Duty Cycles 100% @ 75A 100% @ 115A Maximum OCV 86VDC S l",
+    "normalizedText": "sa current input at output 20.8a at 100a 25.5a at 200a welding current range 30–140a 30–220a 40% @ 100a 25% @ 200a rated duty cycles 100% @ 75a 100% @ 115a maximum ocv 86vdc s l",
     "sourceKind": "table"
   },
   {
     "id": "owner-manual-p7-c2",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 7,
+    "title": "Specifications",
+    "text": "Rated Duty Cycles 100% @ 75A 100% @ 115A Maximum OCV 86VDC S l Mild Steel, Stainless Steel Weldable Materials Aluminum (with optional Spool Gun) RO Solid Core: 0.025\"/0.030\"/0.035\" nt",
+    "normalizedText": "rated duty cycles 100% @ 75a 100% @ 115a maximum ocv 86vdc s l mild steel, stainless steel weldable materials aluminum (with optional spool gun) ro solid core: 0.025\"/0.030\"/0.035\" nt",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p7-c3",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -605,18 +616,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p7-c3",
+    "id": "owner-manual-p7-c4",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 7,
     "title": "Specifications",
-    "text": "c Wire Speed 50–500 IPM Wire Spool Capacity Up to 12 lb spool tig e Power Input 120VAC / 60Hz 240VAC / 60Hz R Wi Current Input at Output 20.6A at 125A 15.6A at 175A",
-    "normalizedText": "c wire speed 50–500 ipm wire spool capacity up to 12 lb spool tig e power input 120vac / 60hz 240vac / 60hz r wi current input at output 20.6a at 125a 15.6a at 175a",
+    "text": "Welding Wire Capacity Flux Cored: 0.030\"/0.035\"/0.045\" O c Wire Speed 50–500 IPM Wire Spool Capacity Up to 12 lb spool tig e Power Input 120VAC / 60Hz 240VAC / 60Hz R",
+    "normalizedText": "welding wire capacity flux cored: 0.030\"/0.035\"/0.045\" o c wire speed 50–500 ipm wire spool capacity up to 12 lb spool tig e power input 120vac / 60hz 240vac / 60hz r",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p7-c4",
+    "id": "owner-manual-p7-c5",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 7,
+    "title": "Specifications",
+    "text": "Wire Spool Capacity Up to 12 lb spool tig e Power Input 120VAC / 60Hz 240VAC / 60Hz R Wi Current Input at Output 20.6A at 125A 15.6A at 175A Welding Current Range 10A–125A 10A–175A 40% @ 125A 30% @ 175A",
+    "normalizedText": "wire spool capacity up to 12 lb spool tig e power input 120vac / 60hz 240vac / 60hz r wi current input at output 20.6a at 125a 15.6a at 175a welding current range 10a–125a 10a–175a 40% @ 125a 30% @ 175a",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p7-c6",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -627,18 +649,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p7-c5",
+    "id": "owner-manual-p7-c7",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 7,
     "title": "Specifications",
-    "text": "Maximum OCV 86VDC Weldable Materials Mild Steel, Stainless Steel, Chrome Moly Stick / Stick Power Input 120VAC / 60Hz 240VAC / 60Hz tig Current Input at Output 19.5A at 80A 23.7A at 175A Welding Current Range 10A–80A 10A–175A 40% @ 80A 25% @ 175A",
-    "normalizedText": "maximum ocv 86vdc weldable materials mild steel, stainless steel, chrome moly stick / stick power input 120vac / 60hz 240vac / 60hz tig current input at output 19.5a at 80a 23.7a at 175a welding current range 10a–80a 10a–175a 40% @ 80a 25% @ 175a",
+    "text": "Rated Duty Cycles 100% @ 90A 100% @ 105A Maximum OCV 86VDC Weldable Materials Mild Steel, Stainless Steel, Chrome Moly Stick / Stick Power Input 120VAC / 60Hz 240VAC / 60Hz tig Current Input at Output 19.5A at 80A 23.7A at 175A",
+    "normalizedText": "rated duty cycles 100% @ 90a 100% @ 105a maximum ocv 86vdc weldable materials mild steel, stainless steel, chrome moly stick / stick power input 120vac / 60hz 240vac / 60hz tig current input at output 19.5a at 80a 23.7a at 175a",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p7-c6",
+    "id": "owner-manual-p7-c8",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 7,
+    "title": "Specifications",
+    "text": "Stick / Stick Power Input 120VAC / 60Hz 240VAC / 60Hz tig Current Input at Output 19.5A at 80A 23.7A at 175A Welding Current Range 10A–80A 10A–175A 40% @ 80A 25% @ 175A Rated Duty Cycles 100% @ 60A 100% @ 100A",
+    "normalizedText": "stick / stick power input 120vac / 60hz 240vac / 60hz tig current input at output 19.5a at 80a 23.7a at 175a welding current range 10a–80a 10a–175a 40% @ 80a 25% @ 175a rated duty cycles 100% @ 60a 100% @ 100a",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p7-c9",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -649,14 +682,14 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p7-c7",
+    "id": "owner-manual-p7-c10",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 7,
     "title": "Specifications",
-    "text": "ip Weldable Materials Mild Steel, Stainless Steel t Welding aintenance M Item 57812 For technical questions, please call 1-800-444-3353. Page 7",
-    "normalizedText": "ip weldable materials mild steel, stainless steel t welding aintenance m item 57812 for technical questions, please call 1-800-444-3353. page 7",
+    "text": "S Maximum OCV 86VDC ip Weldable Materials Mild Steel, Stainless Steel t Welding aintenance M Item 57812 For technical questions, please call 1-800-444-3353. Page 7",
+    "normalizedText": "s maximum ocv 86vdc ip weldable materials mild steel, stainless steel t welding aintenance m item 57812 for technical questions, please call 1-800-444-3353. page 7",
     "sourceKind": "table"
   },
   {
@@ -2525,12 +2558,23 @@
     "manualKind": "manual",
     "pageNumber": 26,
     "title": "Sharpen Tungsten Electrode (sold separately)",
-    "text": "approved Safety goggles when grinding an Electrode. Rotate Electrode tip until a blunt point is formed. 1. Shut off the welder and wait until Electrode and Torch have cooled enough to handle. note: Grinding direction must be grinding parallel to length of Electrode. Wheel c 2. Remove Back Cap. Pull Electrode from front O of Torch. (Pulling it from rear will damage 5. The conical portion of the ideal nt",
-    "normalizedText": "approved safety goggles when grinding an electrode. rotate electrode tip until a blunt point is formed. 1. shut off the welder and wait until electrode and torch have cooled enough to handle. note: grinding direction must be grinding parallel to length of electrode. wheel c 2. remove back cap. pull electrode from front o of torch. (pulling it from rear will damage 5. the conical portion of the ideal nt",
+    "text": "Electrodes may have materials added to them that are against the surface of electrode hazardous to breathe. Wear a respirator and ANSI- the grinding wheel at an angle. approved Safety goggles when grinding an Electrode. Rotate Electrode tip until a blunt point is formed. 1. Shut off the welder and wait until Electrode and Torch have cooled enough to handle. note: Grinding direction must be grinding parallel to length of Electrode. Wheel c 2. Remove Back Cap. Pull Electrode from front",
+    "normalizedText": "electrodes may have materials added to them that are against the surface of electrode hazardous to breathe. wear a respirator and ansi- the grinding wheel at an angle. approved safety goggles when grinding an electrode. rotate electrode tip until a blunt point is formed. 1. shut off the welder and wait until electrode and torch have cooled enough to handle. note: grinding direction must be grinding parallel to length of electrode. wheel c 2. remove back cap. pull electrode from front",
     "sourceKind": "table"
   },
   {
     "id": "owner-manual-p26-c2",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 26,
+    "title": "Sharpen Tungsten Electrode (sold separately)",
+    "text": "1. Shut off the welder and wait until Electrode and Torch have cooled enough to handle. note: Grinding direction must be grinding parallel to length of Electrode. Wheel c 2. Remove Back Cap. Pull Electrode from front O of Torch. (Pulling it from rear will damage 5. The conical portion of the ideal nt Collet and create burrs on Electrode). tip will be 2-1/2 times as long RO as the Electrode diameter.",
+    "normalizedText": "1. shut off the welder and wait until electrode and torch have cooled enough to handle. note: grinding direction must be grinding parallel to length of electrode. wheel c 2. remove back cap. pull electrode from front o of torch. (pulling it from rear will damage 5. the conical portion of the ideal nt collet and create burrs on electrode). tip will be 2-1/2 times as long ro as the electrode diameter.",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p26-c3",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -2541,18 +2585,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p26-c3",
+    "id": "owner-manual-p26-c4",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 26,
     "title": "Sharpen Tungsten Electrode (sold separately)",
-    "text": "S contaminated, use pliers or a suitable tool to 6. Re-insert Electrode into Collet with tip grip the Electrode above the contaminated protruding 1/8\"-1/4\" beyond the Ceramic section and snap off the end of the Electrode. Nozzle, then re-tighten the Back Cap. Assemble TIG Torch (sold separately) Wi 1. Consult Settings Chart, on top of Welder, to 8. Lock Electrode in place with Back Cap. R determine proper Tungsten Electrode size to be Electrode should protrude 1/8\" to 1/4\" e used with thickness of material to be welded. beyond the Ceramic Nozzle. 2. Match Collet and Collet Body sizes",
-    "normalizedText": "s contaminated, use pliers or a suitable tool to 6. re-insert electrode into collet with tip grip the electrode above the contaminated protruding 1/8\"-1/4\" beyond the ceramic section and snap off the end of the electrode. nozzle, then re-tighten the back cap. assemble tig torch (sold separately) wi 1. consult settings chart, on top of welder, to 8. lock electrode in place with back cap. r determine proper tungsten electrode size to be electrode should protrude 1/8\" to 1/4\" e used with thickness of material to be welded. beyond the ceramic nozzle. 2. match collet and collet body sizes",
+    "text": "3. If Electrode has dulled or been otherwise l S contaminated, use pliers or a suitable tool to 6. Re-insert Electrode into Collet with tip grip the Electrode above the contaminated protruding 1/8\"-1/4\" beyond the Ceramic section and snap off the end of the Electrode. Nozzle, then re-tighten the Back Cap. Assemble TIG Torch (sold separately) Wi 1. Consult Settings Chart, on top of Welder, to 8. Lock Electrode in place with Back Cap. R determine proper Tungsten Electrode size to be Electrode should protrude 1/8\" to 1/4\"",
+    "normalizedText": "3. if electrode has dulled or been otherwise l s contaminated, use pliers or a suitable tool to 6. re-insert electrode into collet with tip grip the electrode above the contaminated protruding 1/8\"-1/4\" beyond the ceramic section and snap off the end of the electrode. nozzle, then re-tighten the back cap. assemble tig torch (sold separately) wi 1. consult settings chart, on top of welder, to 8. lock electrode in place with back cap. r determine proper tungsten electrode size to be electrode should protrude 1/8\" to 1/4\"",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p26-c4",
+    "id": "owner-manual-p26-c5",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 26,
+    "title": "Sharpen Tungsten Electrode (sold separately)",
+    "text": "section and snap off the end of the Electrode. Nozzle, then re-tighten the Back Cap. Assemble TIG Torch (sold separately) Wi 1. Consult Settings Chart, on top of Welder, to 8. Lock Electrode in place with Back Cap. R determine proper Tungsten Electrode size to be Electrode should protrude 1/8\" to 1/4\" e used with thickness of material to be welded. beyond the Ceramic Nozzle. 2. Match Collet and Collet Body sizes to Tungsten Electrode size. Back cap 3. Thread Collet Body into the front of the Torch.",
+    "normalizedText": "section and snap off the end of the electrode. nozzle, then re-tighten the back cap. assemble tig torch (sold separately) wi 1. consult settings chart, on top of welder, to 8. lock electrode in place with back cap. r determine proper tungsten electrode size to be electrode should protrude 1/8\" to 1/4\" e used with thickness of material to be welded. beyond the ceramic nozzle. 2. match collet and collet body sizes to tungsten electrode size. back cap 3. thread collet body into the front of the torch.",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p26-c6",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -2563,18 +2618,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p26-c5",
+    "id": "owner-manual-p26-c7",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 26,
     "title": "Sharpen Tungsten Electrode (sold separately)",
-    "text": "insert tungsten collet electrode here. / Stick5. Thread Ceramic Nozzle onto Collet Body. 6. Insert Collet into back of Torch and into Collet Body. 7. Insert Tungsten Electrode into collet Body Collet on front of Torch. ceramic",
-    "normalizedText": "insert tungsten collet electrode here. / stick5. thread ceramic nozzle onto collet body. 6. insert collet into back of torch and into collet body. 7. insert tungsten electrode into collet body collet on front of torch. ceramic",
+    "text": "4. Make sure Ceramic Nozzle size is tig appropriate for application. insert tungsten collet electrode here. / Stick5. Thread Ceramic Nozzle onto Collet Body. 6. Insert Collet into back of Torch and into Collet Body. 7. Insert Tungsten Electrode into collet Body",
+    "normalizedText": "4. make sure ceramic nozzle size is tig appropriate for application. insert tungsten collet electrode here. / stick5. thread ceramic nozzle onto collet body. 6. insert collet into back of torch and into collet body. 7. insert tungsten electrode into collet body",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p26-c6",
+    "id": "owner-manual-p26-c8",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 26,
+    "title": "Sharpen Tungsten Electrode (sold separately)",
+    "text": "/ Stick5. Thread Ceramic Nozzle onto Collet Body. 6. Insert Collet into back of Torch and into Collet Body. 7. Insert Tungsten Electrode into collet Body Collet on front of Torch. ceramic nozzle Welding",
+    "normalizedText": "/ stick5. thread ceramic nozzle onto collet body. 6. insert collet into back of torch and into collet body. 7. insert tungsten electrode into collet body collet on front of torch. ceramic nozzle welding",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p26-c9",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -2585,14 +2651,14 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p26-c7",
+    "id": "owner-manual-p26-c10",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 26,
     "title": "Sharpen Tungsten Electrode (sold separately)",
-    "text": "S M aintenance Page 26 For technical questions, please call 1-800-444-3353. Item 57812",
-    "normalizedText": "s m aintenance page 26 for technical questions, please call 1-800-444-3353. item 57812",
+    "text": "t ip S M aintenance Page 26 For technical questions, please call 1-800-444-3353. Item 57812",
+    "normalizedText": "t ip s m aintenance page 26 for technical questions, please call 1-800-444-3353. item 57812",
     "sourceKind": "table"
   },
   {
@@ -3031,12 +3097,23 @@
     "manualKind": "manual",
     "pageNumber": 31,
     "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
-    "text": "• Press Main Control Knob to Sa select desired setting. 11. Open valve on TIG Torch to start gas flow. • Turn Main Control Knob to adjust setting. 12. To initiate welding arc, push Foot Pedal and touch Available Optional Settings: Electrode to work piece and lift. If not using Foot Pedal, touch Electrode to work piece and lift. • Recall Setting–Retrieve saved settings. S",
-    "normalizedText": "• press main control knob to sa select desired setting. 11. open valve on tig torch to start gas flow. • turn main control knob to adjust setting. 12. to initiate welding arc, push foot pedal and touch available optional settings: electrode to work piece and lift. if not using foot pedal, touch electrode to work piece and lift. • recall setting–retrieve saved settings. s",
+    "text": "• Turn Main Control Knob until desired Tungsten Electrode and the workpiece: between ety setting appears on screen. 1 and 1.5 times the diameter of the Electrode. F • Press Main Control Knob to Sa select desired setting. 11. Open valve on TIG Torch to start gas flow. • Turn Main Control Knob to adjust setting. 12. To initiate welding arc, push Foot Pedal and touch Available Optional Settings: Electrode to work piece and lift. If not using Foot Pedal, touch Electrode to work piece and lift.",
+    "normalizedText": "• turn main control knob until desired tungsten electrode and the workpiece: between ety setting appears on screen. 1 and 1.5 times the diameter of the electrode. f • press main control knob to sa select desired setting. 11. open valve on tig torch to start gas flow. • turn main control knob to adjust setting. 12. to initiate welding arc, push foot pedal and touch available optional settings: electrode to work piece and lift. if not using foot pedal, touch electrode to work piece and lift.",
     "sourceKind": "table"
   },
   {
     "id": "owner-manual-p31-c2",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 31,
+    "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
+    "text": "select desired setting. 11. Open valve on TIG Torch to start gas flow. • Turn Main Control Knob to adjust setting. 12. To initiate welding arc, push Foot Pedal and touch Available Optional Settings: Electrode to work piece and lift. If not using Foot Pedal, touch Electrode to work piece and lift. • Recall Setting–Retrieve saved settings. S • Save Setting–Program up to 13. When welding puddle is hot enough, tilt Torch l 5 different configurations. backward about 10-15 degrees from vertical and",
+    "normalizedText": "select desired setting. 11. open valve on tig torch to start gas flow. • turn main control knob to adjust setting. 12. to initiate welding arc, push foot pedal and touch available optional settings: electrode to work piece and lift. if not using foot pedal, touch electrode to work piece and lift. • recall setting–retrieve saved settings. s • save setting–program up to 13. when welding puddle is hot enough, tilt torch l 5 different configurations. backward about 10-15 degrees from vertical and",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p31-c3",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3047,18 +3124,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c3",
+    "id": "owner-manual-p31-c4",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 31,
     "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
-    "text": "O 14. Alternate between pushing the torch/weld c puddle and adding the TIG Rod material. nOte: Remove the TIG Rod each time the Electrode is advanced, but do not remove it from the gas shield. This prevents oxidation from contaminating the weld. 15. When finished welding, release the Foot Pedal but e R",
-    "normalizedText": "o 14. alternate between pushing the torch/weld c puddle and adding the tig rod material. note: remove the tig rod each time the electrode is advanced, but do not remove it from the gas shield. this prevents oxidation from contaminating the weld. 15. when finished welding, release the foot pedal but e r",
+    "text": "move it back slightly. Add TIG Rod material as RO needed to the front end of the weld puddle. nt O 14. Alternate between pushing the torch/weld c puddle and adding the TIG Rod material. nOte: Remove the TIG Rod each time the Electrode is advanced, but do not remove it from the gas shield. This prevents oxidation from contaminating the weld.",
+    "normalizedText": "move it back slightly. add tig rod material as ro needed to the front end of the weld puddle. nt o 14. alternate between pushing the torch/weld c puddle and adding the tig rod material. note: remove the tig rod each time the electrode is advanced, but do not remove it from the gas shield. this prevents oxidation from contaminating the weld.",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c4",
+    "id": "owner-manual-p31-c5",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 31,
+    "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
+    "text": "puddle and adding the TIG Rod material. nOte: Remove the TIG Rod each time the Electrode is advanced, but do not remove it from the gas shield. This prevents oxidation from contaminating the weld. 15. When finished welding, release the Foot Pedal but e R keep Torch on weld puddle until weld solidifies. If not using Foot Pedal, pull Torch away from Wi",
+    "normalizedText": "puddle and adding the tig rod material. note: remove the tig rod each time the electrode is advanced, but do not remove it from the gas shield. this prevents oxidation from contaminating the weld. 15. when finished welding, release the foot pedal but e r keep torch on weld puddle until weld solidifies. if not using foot pedal, pull torch away from wi",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p31-c6",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3069,18 +3157,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c5",
+    "id": "owner-manual-p31-c7",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 31,
     "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
-    "text": "16. Close valve on TIG Torch and turn Right Knob to OFF to turn off power to TIG Torch. 17. Set TIG Torch down on nonconductive, nonflammable surface away from note: The initial settings may need to be any grounded objects. adjusted after stopping and carefully inspecting 18. Turn the Power Switch OFF. / Stick the weld. Proper welding takes experience.",
-    "normalizedText": "16. close valve on tig torch and turn right knob to off to turn off power to tig torch. 17. set tig torch down on nonconductive, nonflammable surface away from note: the initial settings may need to be any grounded objects. adjusted after stopping and carefully inspecting 18. turn the power switch off. / stick the weld. proper welding takes experience.",
+    "text": "work piece until welding arc is broken, then return the gas coverage until weld solidifies. 16. Close valve on TIG Torch and turn Right Knob to OFF to turn off power to TIG Torch. 17. Set TIG Torch down on nonconductive, nonflammable surface away from note: The initial settings may need to be any grounded objects. adjusted after stopping and carefully inspecting",
+    "normalizedText": "work piece until welding arc is broken, then return the gas coverage until weld solidifies. 16. close valve on tig torch and turn right knob to off to turn off power to tig torch. 17. set tig torch down on nonconductive, nonflammable surface away from note: the initial settings may need to be any grounded objects. adjusted after stopping and carefully inspecting",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c6",
+    "id": "owner-manual-p31-c8",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 31,
+    "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
+    "text": "17. Set TIG Torch down on nonconductive, nonflammable surface away from note: The initial settings may need to be any grounded objects. adjusted after stopping and carefully inspecting 18. Turn the Power Switch OFF. / Stick the weld. Proper welding takes experience. 19. To prevent accidents, after use: tig WaRning! tO pReVent SeRiOUS inJURy:",
+    "normalizedText": "17. set tig torch down on nonconductive, nonflammable surface away from note: the initial settings may need to be any grounded objects. adjusted after stopping and carefully inspecting 18. turn the power switch off. / stick the weld. proper welding takes experience. 19. to prevent accidents, after use: tig warning! to prevent serious injury:",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p31-c9",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3091,18 +3190,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c7",
+    "id": "owner-manual-p31-c10",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 31,
     "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
-    "text": "(or welding mask), ear protection, welding gloves, • Remove Ground Clamp from workpiece or table. sleeves and apron, niOSH-approved respirator, S and fire resistant work clothes without pockets • Disconnect TIG Torch, Ground ip should be worn when welding. light from the and Foot Pedal Cables. t arc can cause permanent damage to the eyes • Close gas cylinder’s valve securely,",
-    "normalizedText": "(or welding mask), ear protection, welding gloves, • remove ground clamp from workpiece or table. sleeves and apron, niosh-approved respirator, s and fire resistant work clothes without pockets • disconnect tig torch, ground ip should be worn when welding. light from the and foot pedal cables. t arc can cause permanent damage to the eyes • close gas cylinder’s valve securely,",
+    "text": "protective gear must be worn when using the • Allow Welder to cool down. Welder; minimum shade number 10 full face shield • Unplug Welder’s power cord from outlet. (or welding mask), ear protection, welding gloves, • Remove Ground Clamp from workpiece or table. sleeves and apron, niOSH-approved respirator, S and fire resistant work clothes without pockets • Disconnect TIG Torch, Ground ip",
+    "normalizedText": "protective gear must be worn when using the • allow welder to cool down. welder; minimum shade number 10 full face shield • unplug welder’s power cord from outlet. (or welding mask), ear protection, welding gloves, • remove ground clamp from workpiece or table. sleeves and apron, niosh-approved respirator, s and fire resistant work clothes without pockets • disconnect tig torch, ground ip",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c8",
+    "id": "owner-manual-p31-c11",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 31,
+    "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
+    "text": "sleeves and apron, niOSH-approved respirator, S and fire resistant work clothes without pockets • Disconnect TIG Torch, Ground ip should be worn when welding. light from the and Foot Pedal Cables. t arc can cause permanent damage to the eyes • Close gas cylinder’s valve securely, and skin. do not breathe arc fumes. remove regulator and replace cap. • Disconnect Gas Hose from Welder.",
+    "normalizedText": "sleeves and apron, niosh-approved respirator, s and fire resistant work clothes without pockets • disconnect tig torch, ground ip should be worn when welding. light from the and foot pedal cables. t arc can cause permanent damage to the eyes • close gas cylinder’s valve securely, and skin. do not breathe arc fumes. remove regulator and replace cap. • disconnect gas hose from welder.",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p31-c12",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3113,18 +3223,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c9",
+    "id": "owner-manual-p31-c13",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 31,
     "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
-    "text": "and check your progress. Perform Strike Test according to Strike test on • Clean, then store Welder and its accessories page 34. After making any necessary indoors out of children’s reach. adjustments, continue to weld while carefully following the DUTY CYCLE guidelines as explained on page 29. WaRning! tO pReVent SeRiOUS inJURy: Metal work bench must be grounded when tig welding.",
-    "normalizedText": "and check your progress. perform strike test according to strike test on • clean, then store welder and its accessories page 34. after making any necessary indoors out of children’s reach. adjustments, continue to weld while carefully following the duty cycle guidelines as explained on page 29. warning! to prevent serious injury: metal work bench must be grounded when tig welding.",
+    "text": "After practice welding on scrap, stop, • Store and secure gas cylinder. Welding and check your progress. Perform Strike Test according to Strike test on • Clean, then store Welder and its accessories page 34. After making any necessary indoors out of children’s reach. adjustments, continue to weld while carefully following the DUTY CYCLE guidelines as explained on page 29.",
+    "normalizedText": "after practice welding on scrap, stop, • store and secure gas cylinder. welding and check your progress. perform strike test according to strike test on • clean, then store welder and its accessories page 34. after making any necessary indoors out of children’s reach. adjustments, continue to weld while carefully following the duty cycle guidelines as explained on page 29.",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p31-c10",
+    "id": "owner-manual-p31-c14",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 31,
+    "title": "d. Optional Settings: 10. Hold TIG Torch in one gloved hand and the TIG",
+    "text": "page 34. After making any necessary indoors out of children’s reach. adjustments, continue to weld while carefully following the DUTY CYCLE guidelines as explained on page 29. WaRning! tO pReVent SeRiOUS inJURy: Metal work bench must be grounded when tig welding. aintenance M",
+    "normalizedText": "page 34. after making any necessary indoors out of children’s reach. adjustments, continue to weld while carefully following the duty cycle guidelines as explained on page 29. warning! to prevent serious injury: metal work bench must be grounded when tig welding. aintenance m",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p31-c15",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3251,12 +3372,23 @@
     "manualKind": "manual",
     "pageNumber": 33,
     "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
-    "text": "setting appears on screen. F and fire resistant work clothes without pockets • Press Main Control Knob to should be worn when welding. light from the Sa select desired setting. arc can cause permanent damage to the eyes • Turn Main Control Knob to adjust setting. and skin. do not breathe arc fumes. Available Optional Settings:",
-    "normalizedText": "setting appears on screen. f and fire resistant work clothes without pockets • press main control knob to should be worn when welding. light from the sa select desired setting. arc can cause permanent damage to the eyes • turn main control knob to adjust setting. and skin. do not breathe arc fumes. available optional settings:",
+    "text": "• Turn Main Control Knob until desired sleeves and apron, niOSH-approved respirator, ety setting appears on screen. F and fire resistant work clothes without pockets • Press Main Control Knob to should be worn when welding. light from the Sa select desired setting. arc can cause permanent damage to the eyes",
+    "normalizedText": "• turn main control knob until desired sleeves and apron, niosh-approved respirator, ety setting appears on screen. f and fire resistant work clothes without pockets • press main control knob to should be worn when welding. light from the sa select desired setting. arc can cause permanent damage to the eyes",
     "sourceKind": "table"
   },
   {
     "id": "owner-manual-p33-c2",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 33,
+    "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
+    "text": "• Press Main Control Knob to should be worn when welding. light from the Sa select desired setting. arc can cause permanent damage to the eyes • Turn Main Control Knob to adjust setting. and skin. do not breathe arc fumes. Available Optional Settings: • Hot Start–Adjust amperage at start of weld. After practice welding on scrap, stop, and check your progress. Perform S",
+    "normalizedText": "• press main control knob to should be worn when welding. light from the sa select desired setting. arc can cause permanent damage to the eyes • turn main control knob to adjust setting. and skin. do not breathe arc fumes. available optional settings: • hot start–adjust amperage at start of weld. after practice welding on scrap, stop, and check your progress. perform s",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p33-c3",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3267,18 +3399,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c3",
+    "id": "owner-manual-p33-c4",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 33,
     "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
-    "text": "RO • Recall Setting–Retrieve saved settings. adjustments, continue to weld while carefully following the DUTY CYCLE nt • Save Setting–Program up to O guidelines as explained on page 29. 5 different configurations. c 8. Place the bare metal end of the Stick Electrode (sold separately) inside the jaws of the Electrode Holder.",
-    "normalizedText": "ro • recall setting–retrieve saved settings. adjustments, continue to weld while carefully following the duty cycle nt • save setting–program up to o guidelines as explained on page 29. 5 different configurations. c 8. place the bare metal end of the stick electrode (sold separately) inside the jaws of the electrode holder.",
+    "text": "• Arc Force–Adjust weld penetration Strike Test according to Strike test on l and smoothness. page 34. After making any necessary RO • Recall Setting–Retrieve saved settings. adjustments, continue to weld while carefully following the DUTY CYCLE nt • Save Setting–Program up to O guidelines as explained on page 29. 5 different configurations. c",
+    "normalizedText": "• arc force–adjust weld penetration strike test according to strike test on l and smoothness. page 34. after making any necessary ro • recall setting–retrieve saved settings. adjustments, continue to weld while carefully following the duty cycle nt • save setting–program up to o guidelines as explained on page 29. 5 different configurations. c",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c4",
+    "id": "owner-manual-p33-c5",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 33,
+    "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
+    "text": "carefully following the DUTY CYCLE nt • Save Setting–Program up to O guidelines as explained on page 29. 5 different configurations. c 8. Place the bare metal end of the Stick Electrode (sold separately) inside the jaws of the Electrode Holder. 9. Stroke the workpiece lightly to ignite the arc. Tips for igniting the arc:",
+    "normalizedText": "carefully following the duty cycle nt • save setting–program up to o guidelines as explained on page 29. 5 different configurations. c 8. place the bare metal end of the stick electrode (sold separately) inside the jaws of the electrode holder. 9. stroke the workpiece lightly to ignite the arc. tips for igniting the arc:",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p33-c6",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3289,18 +3432,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c5",
+    "id": "owner-manual-p33-c7",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 33,
     "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
-    "text": "b. Stroke the surface with the Electrode. Wi c. Strike the surface like a match with the Electrode. 10. After the arc ignites: a. Lift the Electrode off workpiece the same distance as the diameter of the bare metal end. b. Tilt Electrode back 10 to 20 degrees. c. Drag Electrode to the back end of the weld puddle to deposit material as needed.",
-    "normalizedText": "b. stroke the surface with the electrode. wi c. strike the surface like a match with the electrode. 10. after the arc ignites: a. lift the electrode off workpiece the same distance as the diameter of the bare metal end. b. tilt electrode back 10 to 20 degrees. c. drag electrode to the back end of the weld puddle to deposit material as needed.",
+    "text": "e a. Tap the surface with the Electrode. R b. Stroke the surface with the Electrode. Wi c. Strike the surface like a match with the Electrode. 10. After the arc ignites: a. Lift the Electrode off workpiece the same distance as the diameter of the bare metal end. b. Tilt Electrode back 10 to 20 degrees.",
+    "normalizedText": "e a. tap the surface with the electrode. r b. stroke the surface with the electrode. wi c. strike the surface like a match with the electrode. 10. after the arc ignites: a. lift the electrode off workpiece the same distance as the diameter of the bare metal end. b. tilt electrode back 10 to 20 degrees.",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c6",
+    "id": "owner-manual-p33-c8",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 33,
+    "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
+    "text": "10. After the arc ignites: a. Lift the Electrode off workpiece the same distance as the diameter of the bare metal end. b. Tilt Electrode back 10 to 20 degrees. c. Drag Electrode to the back end of the weld puddle to deposit material as needed. / Stick 11. When finished welding; lift the Electrode from",
+    "normalizedText": "10. after the arc ignites: a. lift the electrode off workpiece the same distance as the diameter of the bare metal end. b. tilt electrode back 10 to 20 degrees. c. drag electrode to the back end of the weld puddle to deposit material as needed. / stick 11. when finished welding; lift the electrode from",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p33-c9",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3311,18 +3465,29 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c7",
+    "id": "owner-manual-p33-c10",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 33,
     "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
-    "text": "surface away from any grounded objects. 12. Turn the Power Switch OFF. S 13. To prevent accidents, after use: ip • Allow Welder to cool down. t • Unplug Welder’s power cord from outlet. • Remove Ground Clamp.",
-    "normalizedText": "surface away from any grounded objects. 12. turn the power switch off. s 13. to prevent accidents, after use: ip • allow welder to cool down. t • unplug welder’s power cord from outlet. • remove ground clamp.",
+    "text": "the workpiece, then set Electrode Holder tig down on nonconductive, nonflammable surface away from any grounded objects. 12. Turn the Power Switch OFF. S 13. To prevent accidents, after use: ip • Allow Welder to cool down. t",
+    "normalizedText": "the workpiece, then set electrode holder tig down on nonconductive, nonflammable surface away from any grounded objects. 12. turn the power switch off. s 13. to prevent accidents, after use: ip • allow welder to cool down. t",
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c8",
+    "id": "owner-manual-p33-c11",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 33,
+    "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
+    "text": "S 13. To prevent accidents, after use: ip • Allow Welder to cool down. t • Unplug Welder’s power cord from outlet. • Remove Ground Clamp. • Disconnect Electrode Holder Welding",
+    "normalizedText": "s 13. to prevent accidents, after use: ip • allow welder to cool down. t • unplug welder’s power cord from outlet. • remove ground clamp. • disconnect electrode holder welding",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p33-c12",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
@@ -3333,14 +3498,25 @@
     "sourceKind": "table"
   },
   {
-    "id": "owner-manual-p33-c9",
+    "id": "owner-manual-p33-c13",
     "manualId": "owner-manual",
     "manualTitle": "Owner's Manual & Safety Instructions",
     "manualKind": "manual",
     "pageNumber": 33,
     "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
-    "text": "indoors out of children’s reach. note: The initial settings may need to be adjusted after stopping and carefully inspecting the weld. Proper welding takes experience. aintenance M Item 57812 For technical questions, please call 1-800-444-3353. Page 33",
-    "normalizedText": "indoors out of children’s reach. note: the initial settings may need to be adjusted after stopping and carefully inspecting the weld. proper welding takes experience. aintenance m item 57812 for technical questions, please call 1-800-444-3353. page 33",
+    "text": "and Ground Cables. 14. Clean, then store Welder and its accessories indoors out of children’s reach. note: The initial settings may need to be adjusted after stopping and carefully inspecting the weld. Proper welding takes experience. aintenance M",
+    "normalizedText": "and ground cables. 14. clean, then store welder and its accessories indoors out of children’s reach. note: the initial settings may need to be adjusted after stopping and carefully inspecting the weld. proper welding takes experience. aintenance m",
+    "sourceKind": "table"
+  },
+  {
+    "id": "owner-manual-p33-c14",
+    "manualId": "owner-manual",
+    "manualTitle": "Owner's Manual & Safety Instructions",
+    "manualKind": "manual",
+    "pageNumber": 33,
+    "title": "e. Optional Settings: WaRning! tO pReVent SeRiOUS inJURy:",
+    "text": "adjusted after stopping and carefully inspecting the weld. Proper welding takes experience. aintenance M Item 57812 For technical questions, please call 1-800-444-3353. Page 33",
+    "normalizedText": "adjusted after stopping and carefully inspecting the weld. proper welding takes experience. aintenance m item 57812 for technical questions, please call 1-800-444-3353. page 33",
     "sourceKind": "table"
   },
   {

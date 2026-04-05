@@ -87,6 +87,8 @@ function ReactRenderer({ content, title }: { content: string; title: string }) {
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"><\/script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"><\/script>
 <script src="https://cdn.tailwindcss.com"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.15.3/Recharts.min.js"><\/script>
+<script src="https://unpkg.com/lucide-react@0.468.0/dist/umd/lucide-react.min.js"><\/script>
 <style>body{margin:0;font-family:system-ui,-apple-system,sans-serif}</style>
 </head><body>
 <div id="root"></div>

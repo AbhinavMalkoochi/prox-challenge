@@ -35,9 +35,6 @@ export class ArtifactStreamParser {
         this.tagStr = "";
         break;
       case "content":
-        if (this.artifactContent) {
-          this.cb.onText(this.artifactContent);
-        }
         this.artifactContent = "";
         this.meta = null;
         this.buffer = "";

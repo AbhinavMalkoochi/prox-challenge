@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-04T23:06:02.061Z",
+  "generatedAt": "2026-04-05T03:00:31.997Z",
   "manuals": [
     {
       "id": "owner-manual",
@@ -26,6 +26,6 @@
       "pageCount": 1
     }
   ],
-  "chunkCount": 445,
+  "chunkCount": 461,
   "pageCount": 51
 }

@@ -4,7 +4,7 @@ import { ArtifactStreamParser } from "../lib/chat/artifact-parser";
 
 function collect() {
   const texts: string[] = [];
-  const artifacts: { identifier: string; type: string; title: string; content: string }[] = [];
+  const artifacts: { identifier: string; type: string; title: string; language?: string; content: string }[] = [];
   const parser = new ArtifactStreamParser({
     onText: (t) => texts.push(t),
     onArtifact: (a) => artifacts.push(a),
@@ -114,12 +114,12 @@ describe("ArtifactStreamParser", () => {
     expect(texts.join("")).not.toContain("identifier");
   });
 
-  it("flush emits incomplete artifact content as text", () => {
+  it("flush discards incomplete artifact content instead of leaking it", () => {
     const { parser, texts, artifacts } = collect();
     parser.feed('<antArtifact identifier="x" type="image/svg+xml" title="T">partial content');
     parser.flush();
     expect(artifacts).toHaveLength(0);
-    expect(texts.join("")).toContain("partial content");
+    expect(texts.join("")).not.toContain("partial content");
   });
 
   it("handles multiline artifact content", () => {

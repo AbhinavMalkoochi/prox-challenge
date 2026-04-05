@@ -179,10 +179,13 @@ function scoreMetadata(
 
 function scoreNumericMatches(text: string, queryNumbers: string[]): number {
   if (queryNumbers.length === 0) return 0;
-  return queryNumbers.reduce(
-    (acc, val) => acc + (new RegExp(`\\b${val}\\b`).test(text) ? 4 : 0),
-    0
-  );
+  let matched = 0;
+  for (const val of queryNumbers) {
+    if (new RegExp(`\\b${val}\\b`).test(text)) matched++;
+  }
+  if (matched === 0) return 0;
+  const allMatch = matched === queryNumbers.length;
+  return matched * 4 + (allMatch ? 6 : 0);
 }
 
 // ── Strategy runners ────────────────────────────────────────────────────────
@@ -260,19 +263,9 @@ function runNgramSearch(
   return scored.sort((a, b) => b.score - a.score).slice(0, 30);
 }
 
-// ── Reciprocal rank fusion ──────────────────────────────────────────────────
+// ── Hybrid score fusion ─────────────────────────────────────────────────────
 
-function buildBm25Map(results: ScoredChunk[]): Map<string, number> {
-  const map = new Map<string, number>();
-  if (results.length === 0) return map;
-  const maxScore = results[0].score || 1;
-  for (const r of results) {
-    map.set(r.chunk.id, r.score / maxScore);
-  }
-  return map;
-}
-
-function buildNgramMap(results: ScoredChunk[]): Map<string, number> {
+function buildNormalizedScoreMap(results: ScoredChunk[]): Map<string, number> {
   const map = new Map<string, number>();
   if (results.length === 0) return map;
   const maxScore = results[0].score || 1;
@@ -290,8 +283,8 @@ function rerankWithHybridSignals(
   filters: SearchFilters
 ): SearchHit[] {
   const queryNumbers = extractQueryNumbers(query);
-  const bm25Scores = buildBm25Map(bm25Results);
-  const ngramScores = buildNgramMap(ngramResults);
+  const bm25Scores = buildNormalizedScoreMap(bm25Results);
+  const ngramScores = buildNormalizedScoreMap(ngramResults);
 
   const seen = new Set<string>();
   const candidates: ScoredChunk[] = [...lexicalResults];
