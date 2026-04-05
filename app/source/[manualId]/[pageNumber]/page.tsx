@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 import { SourceViewer } from "@/components/source/source-viewer";
 import { getHighlightRects } from "@/lib/knowledge/highlights";
 import { getSourcePage } from "@/lib/knowledge/source";
+
+export const metadata: Metadata = {
+  title: "Source View",
+  description: "Exact cited manual page for a grounded response."
+};
 
 type SourcePageProps = {
   params: Promise<{
@@ -41,14 +47,7 @@ export default async function SourcePage(props: SourcePageProps) {
     <main className="source-page-shell">
       <header className="source-page-header">
         <div>
-          <p className="eyebrow">Exact source view</p>
-          <h1>
-            {sourcePage.manualTitle} • page {sourcePage.pageNumber}
-          </h1>
-          <p className="source-page-copy">
-            This is the exact page the agent cited. Matching text is highlighted
-            when the response includes a quote anchor.
-          </p>
+          <h1>{sourcePage.manualTitle} • page {sourcePage.pageNumber}</h1>
         </div>
         <div className="source-page-actions">
           <Link className="secondary-link" href="/">
@@ -66,22 +65,11 @@ export default async function SourcePage(props: SourcePageProps) {
       </header>
 
       <section className="source-page-layout">
-        <article className="panel">
-          <div className="panel-header">
-            <h2>Source anchor</h2>
-            <p>{sourcePage.page.title}</p>
-          </div>
-          <div className="quote-panel">
-            {sourcePage.excerpt ? (
-              <blockquote>{sourcePage.excerpt}</blockquote>
-            ) : (
-              <p>
-                No text excerpt was provided for this citation, so the viewer is
-                focused on the exact page instead.
-              </p>
-            )}
-          </div>
-        </article>
+        {sourcePage.excerpt ? (
+          <article className="quote-panel">
+            <blockquote>{sourcePage.excerpt}</blockquote>
+          </article>
+        ) : null}
 
         <article className="panel source-panel">
           <SourceViewer

@@ -20,7 +20,7 @@ export async function GET(_: Request, context: RouteContext) {
   }
 
   const pdfBuffer = await readFile(
-    path.join(process.cwd(), FILES_DIRECTORY, manual.filename)
+    path.join(/* turbopackIgnore: true */ process.cwd(), FILES_DIRECTORY, manual.filename)
   );
 
   return new NextResponse(pdfBuffer, {

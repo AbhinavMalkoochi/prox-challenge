@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
 
 import type { HighlightRect } from "@/lib/knowledge/highlights";
 
 GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
+  "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
   import.meta.url
 ).toString();
 
@@ -77,10 +77,10 @@ export function SourceViewer({
     <div className="source-viewer-frame" style={{ width: pageWidth * scale }}>
       <canvas ref={canvasRef} />
       <div className="source-highlight-layer">
-        {highlights.map((highlight, index) => (
+        {highlights.map((highlight) => (
           <div
             className="source-highlight"
-            key={`${highlight.x}-${highlight.y}-${index}`}
+            key={`${highlight.x}-${highlight.y}-${highlight.width}-${highlight.height}`}
             style={{
               left: highlight.x * scale,
               top: highlight.y * scale,

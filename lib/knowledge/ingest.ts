@@ -24,36 +24,12 @@ type PdfTextItem = {
   height: number;
 };
 
-const KEYWORD_HINTS = [
-  "mig",
-  "flux",
-  "flux-cored",
-  "tig",
-  "stick",
-  "polarity",
-  "duty cycle",
-  "wire feed",
-  "porosity",
-  "ground clamp",
-  "electrode",
-  "voltage",
-  "amperage",
-  "settings",
-  "troubleshooting",
-  "selection chart"
-];
-
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
 
 function normalizeSearchText(value: string): string {
   return normalizeWhitespace(value).toLowerCase();
-}
-
-function deriveKeywordHints(text: string): string[] {
-  const normalized = normalizeSearchText(text);
-  return KEYWORD_HINTS.filter((keyword) => normalized.includes(keyword));
 }
 
 function deriveSourceKind(text: string, manualKind: string): ManualPage["sourceKind"] {
@@ -166,7 +142,6 @@ function createChunks(page: ManualPage, manualTitle: string, manualKind: string)
         title: page.title,
         text,
         normalizedText: normalizeSearchText(text),
-        keywordHints: deriveKeywordHints(text),
         sourceKind: page.sourceKind
       }
     ];
@@ -198,7 +173,6 @@ function createChunks(page: ManualPage, manualTitle: string, manualKind: string)
       title: page.title,
       text,
       normalizedText: normalizeSearchText(text),
-      keywordHints: deriveKeywordHints(text),
       sourceKind: page.sourceKind
     });
 

@@ -4,21 +4,20 @@ import path from "node:path";
 import MiniSearch from "minisearch";
 
 import { GENERATED_DIRECTORY } from "@/lib/manuals";
+import { normalizeExcerptText } from "@/lib/knowledge/excerpt-match";
 import type {
   ManualChunk,
   ManualKnowledgeBase,
-  ManualPage
+  ManualPage,
 } from "@/lib/knowledge/types";
-
-type SearchableChunk = ManualChunk & {
-  boostTerms: string;
-};
 
 export type KnowledgeStore = {
   chunks: ManualChunk[];
   pages: ManualPage[];
   pageMap: Map<string, ManualPage>;
-  searchIndex: MiniSearch<SearchableChunk>;
+  searchIndex: MiniSearch<ManualChunk>;
+  idfMap: Map<string, number>;
+  avgDocLength: number;
 };
 
 let knowledgeStorePromise: Promise<KnowledgeStore> | undefined;
@@ -37,15 +36,40 @@ async function loadKnowledgeBase(): Promise<ManualKnowledgeBase> {
   return JSON.parse(rawContent) as ManualKnowledgeBase;
 }
 
+function computeIdfMap(chunks: ManualChunk[]): Map<string, number> {
+  const docCount = chunks.length;
+  const docFreqs = new Map<string, number>();
+
+  for (const chunk of chunks) {
+    const uniqueTerms = new Set(
+      normalizeExcerptText(chunk.text).split(" ").filter(Boolean)
+    );
+    for (const term of uniqueTerms) {
+      docFreqs.set(term, (docFreqs.get(term) ?? 0) + 1);
+    }
+  }
+
+  const idfMap = new Map<string, number>();
+  for (const [term, df] of docFreqs) {
+    idfMap.set(term, Math.log((docCount - df + 0.5) / (df + 0.5) + 1));
+  }
+  return idfMap;
+}
+
+function computeAvgDocLength(chunks: ManualChunk[]): number {
+  if (chunks.length === 0) return 1;
+  const totalTokens = chunks.reduce(
+    (sum, chunk) =>
+      sum + chunk.normalizedText.split(" ").filter(Boolean).length,
+    0
+  );
+  return totalTokens / chunks.length;
+}
+
 async function createKnowledgeStore(): Promise<KnowledgeStore> {
   const knowledgeBase = await loadKnowledgeBase();
-  const searchableChunks: SearchableChunk[] = knowledgeBase.chunks.map((chunk) => ({
-    ...chunk,
-    boostTerms: chunk.keywordHints.join(" ")
-  }));
-
-  const searchIndex = new MiniSearch<SearchableChunk>({
-    fields: ["text", "title", "boostTerms"],
+  const searchIndex = new MiniSearch<ManualChunk>({
+    fields: ["text", "title", "manualTitle"],
     storeFields: [
       "id",
       "manualId",
@@ -55,28 +79,35 @@ async function createKnowledgeStore(): Promise<KnowledgeStore> {
       "title",
       "text",
       "normalizedText",
-      "keywordHints",
-      "sourceKind"
+      "sourceKind",
     ],
     searchOptions: {
       prefix: true,
-      fuzzy: 0.1,
+      fuzzy: 0.12,
       boost: {
         title: 2,
-        boostTerms: 5
-      }
-    }
+        manualTitle: 1.5,
+      },
+    },
   });
 
-  searchIndex.addAll(searchableChunks);
+  searchIndex.addAll(knowledgeBase.chunks);
+
+  const idfMap = computeIdfMap(knowledgeBase.chunks);
+  const avgDocLength = computeAvgDocLength(knowledgeBase.chunks);
 
   return {
     chunks: knowledgeBase.chunks,
     pages: knowledgeBase.pages,
     pageMap: new Map(
-      knowledgeBase.pages.map((page) => [buildPageKey(page.manualId, page.pageNumber), page])
+      knowledgeBase.pages.map((page) => [
+        buildPageKey(page.manualId, page.pageNumber),
+        page,
+      ])
     ),
-    searchIndex
+    searchIndex,
+    idfMap,
+    avgDocLength,
   };
 }
 
@@ -88,6 +119,5 @@ export async function getKnowledgeStore(): Promise<KnowledgeStore> {
   if (!knowledgeStorePromise) {
     knowledgeStorePromise = createKnowledgeStore();
   }
-
   return knowledgeStorePromise;
 }

@@ -47,7 +47,6 @@ export type ManualChunk = {
   title: string;
   text: string;
   normalizedText: string;
-  keywordHints: string[];
   sourceKind: SourceKind;
 };
 
