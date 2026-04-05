@@ -61,10 +61,7 @@ function InlineContent({
 
     if (i < parts.length - 1 && aIdx < artifacts.length) {
       elements.push(
-        <ArtifactRenderer
-          key={`a${aIdx}`}
-          artifact={artifacts[aIdx]}
-        />
+        <ArtifactRenderer key={`a${aIdx}`} artifact={artifacts[aIdx]} />
       );
       aIdx++;
     }

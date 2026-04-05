@@ -1,7 +1,44 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { MANUALS } from "@/lib/manuals";
 import type { AntArtifact } from "@/lib/chat/types";
+import { citationAnchorId } from "@/lib/chat/source-anchor";
+
+function ArtifactSourceLinks({ artifact }: { artifact: AntArtifact }) {
+  const refs = artifact.sourceRefs;
+  if (!refs?.length) return null;
+
+  function scrollToSource(manualId: string, pageNumber: number) {
+    const el = document.getElementById(citationAnchorId(manualId, pageNumber));
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    el?.classList.add("source-card-flash");
+    window.setTimeout(() => el?.classList.remove("source-card-flash"), 1200);
+  }
+
+  return (
+    <div className="artifact-source-strip">
+      <span className="artifact-source-strip-label">Jump to source in manual</span>
+      <div className="artifact-source-chips">
+        {refs.map((r) => {
+          const manualTitle =
+            MANUALS.find((m) => m.id === r.manualId)?.title ?? r.manualId;
+          return (
+            <button
+              key={`${r.manualId}-${r.pageNumber}`}
+              type="button"
+              className="artifact-source-chip"
+              onClick={() => scrollToSource(r.manualId, r.pageNumber)}
+            >
+              <span className="artifact-source-chip-manual">{manualTitle}</span>
+              <span className="artifact-source-chip-page">p.{r.pageNumber}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 // ── Iframe: shared auto-resizing renderer ───────────────────────────────────
 
@@ -168,6 +205,7 @@ export function ArtifactRenderer({ artifact }: { artifact: AntArtifact }) {
       <div className="artifact-body">
         <ArtifactContent artifact={artifact} />
       </div>
+      <ArtifactSourceLinks artifact={artifact} />
     </div>
   );
 }

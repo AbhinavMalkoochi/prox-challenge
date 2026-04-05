@@ -328,11 +328,28 @@ a:hover {
 }
 
 .source-card {
+  scroll-margin-top: 88px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg);
   overflow: hidden;
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.source-card-flash {
+  animation: source-card-flash 1s ease-out;
+}
+
+@keyframes source-card-flash {
+  0%,
+  40% {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  }
+  100% {
+    border-color: var(--border);
+    box-shadow: none;
+  }
 }
 
 .source-card:hover {
@@ -405,6 +422,19 @@ a:hover {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.source-linked-visuals {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.source-linked-label {
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .source-card-chevron {
@@ -650,6 +680,62 @@ a:hover {
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+.artifact-source-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+  margin-top: 4px;
+}
+
+.artifact-source-strip-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.artifact-source-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.artifact-source-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.artifact-source-chip:hover {
+  border-color: var(--accent);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.artifact-source-chip-manual {
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.artifact-source-chip-page {
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .artifact-header p,

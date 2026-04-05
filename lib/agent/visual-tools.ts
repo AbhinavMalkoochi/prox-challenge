@@ -1,4 +1,47 @@
-import type { AntArtifact } from "@/lib/chat/types";
+import { MANUALS } from "@/lib/manuals";
+import type { AntArtifact, ArtifactSourceRef } from "@/lib/chat/types";
+
+const VALID_MANUAL_IDS = new Set<string>(MANUALS.map((m) => m.id));
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function manualTitleForId(manualId: string): string {
+  return MANUALS.find((m) => m.id === manualId)?.title ?? manualId;
+}
+
+/** Parse `sourcePages` from tool input (Anthropic returns unknown). */
+export function parseSourcePagesFromToolInput(
+  input: Record<string, unknown>
+): ArtifactSourceRef[] {
+  const raw = input.sourcePages;
+  if (!Array.isArray(raw)) return [];
+  const out: ArtifactSourceRef[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const o = item as { manualId?: unknown; pageNumber?: unknown };
+    const manualId = typeof o.manualId === "string" ? o.manualId : "";
+    const pageNumber = typeof o.pageNumber === "number" ? o.pageNumber : Number(o.pageNumber);
+    if (!VALID_MANUAL_IDS.has(manualId)) continue;
+    if (!Number.isFinite(pageNumber) || pageNumber < 1) continue;
+    out.push({ manualId, pageNumber: Math.floor(pageNumber) });
+  }
+  return out;
+}
+
+function buildSourceFooter(sourceRefs: ArtifactSourceRef[]): string {
+  if (sourceRefs.length === 0) return "";
+  const items = sourceRefs.map(
+    (r) =>
+      `<li>${escapeHtml(manualTitleForId(r.manualId))} · page ${r.pageNumber}</li>`
+  );
+  return `<div class="artifact-source-footer"><div class="artifact-source-footer-label">Sources in manual</div><ul>${items.join("")}</ul></div>`;
+}
 
 type DutyCycleRating = {
   amperage: number;
@@ -88,13 +131,20 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1e293b;lin
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 .animate-in{animation:fadeUp .4s ease-out both}
+.artifact-source-footer{margin-top:0;border-top:1px solid #e2e8f0;padding:12px 20px;background:#f8fafc;font-size:12px;color:#475569}
+.artifact-source-footer-label{font-weight:700;color:#334155;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;font-size:10px}
+.artifact-source-footer ul{margin:0;padding-left:1.2em}
+.artifact-source-footer li{margin:2px 0}
 `;
 
 function wrapHtml(body: string, extraCss = "", extraJs = ""): string {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${SHARED_STYLES}${extraCss}</style></head><body>${body}${extraJs ? `<script>${extraJs}<\/script>` : ""}</body></html>`;
 }
 
-export function buildDutyCycleArtifact(input: DutyCycleInput): AntArtifact {
+export function buildDutyCycleArtifact(
+  input: DutyCycleInput,
+  sourceRefs: ArtifactSourceRef[] = []
+): AntArtifact {
   const rows = input.ratings.map((r, i) => `
     <div class="cycle-row animate-in" style="animation-delay:${i * 0.1}s">
       <div class="cycle-header">
@@ -141,17 +191,21 @@ export function buildDutyCycleArtifact(input: DutyCycleInput): AntArtifact {
   </div>
   ${rows}
   ${continuous}
-</div>`;
+</div>${buildSourceFooter(sourceRefs)}`;
 
   return {
     identifier: `duty-cycle-${input.process}-${input.voltage}`,
     type: "text/html",
     title: `${input.process.toUpperCase()} Duty Cycle — ${input.voltage}V`,
     content: wrapHtml(body, css),
+    sourceRefs: sourceRefs.length ? sourceRefs : undefined,
   };
 }
 
-export function buildPolarityArtifact(input: PolarityInput): AntArtifact {
+export function buildPolarityArtifact(
+  input: PolarityInput,
+  sourceRefs: ArtifactSourceRef[] = []
+): AntArtifact {
   const socketColors: Record<string, { bg: string; border: string; label: string }> = {
     positive: { bg: "#fee2e2", border: "#ef4444", label: "+" },
     negative: { bg: "#dbeafe", border: "#3b82f6", label: "−" },
@@ -201,17 +255,21 @@ export function buildPolarityArtifact(input: PolarityInput): AntArtifact {
   </div>
   ${connections}
   ${notes}
-</div>`;
+</div>${buildSourceFooter(sourceRefs)}`;
 
   return {
     identifier: `polarity-${input.process}`,
     type: "text/html",
     title: `${input.process.toUpperCase()} Polarity Setup`,
     content: wrapHtml(body, css),
+    sourceRefs: sourceRefs.length ? sourceRefs : undefined,
   };
 }
 
-export function buildTroubleshootingArtifact(input: TroubleshootingInput): AntArtifact {
+export function buildTroubleshootingArtifact(
+  input: TroubleshootingInput,
+  sourceRefs: ArtifactSourceRef[] = []
+): AntArtifact {
   const checks = input.checks.map((c, i) => `
     <div class="ts-step animate-in" style="animation-delay:${i * 0.08}s" data-idx="${i}">
       <button class="ts-step-header" onclick="toggleStep(${i})">
@@ -307,17 +365,21 @@ updateProgress();
     <div class="ts-progress-bar"><div class="ts-progress-fill"></div></div>
     <span class="ts-progress-label">0/${input.checks.length} checked</span>
   </div>
-</div>`;
+</div>${buildSourceFooter(sourceRefs)}`;
 
   return {
     identifier: `troubleshoot-${input.problem.toLowerCase().replace(/\s+/g, "-").slice(0, 30)}`,
     type: "text/html",
     title: `Troubleshooting: ${input.problem}`,
     content: wrapHtml(body, css, js),
+    sourceRefs: sourceRefs.length ? sourceRefs : undefined,
   };
 }
 
-export function buildSetupGuideArtifact(input: SetupGuideInput): AntArtifact {
+export function buildSetupGuideArtifact(
+  input: SetupGuideInput,
+  sourceRefs: ArtifactSourceRef[] = []
+): AntArtifact {
   const steps = input.steps.map((s, i) => `
     <div class="sg-step animate-in" style="animation-delay:${i * 0.08}s" data-idx="${i}">
       <div class="sg-step-left">
@@ -389,17 +451,21 @@ updateDots();
     <div class="sg-progress-dots">${dots}</div>
     <span class="sg-progress-text">0 of ${input.steps.length} steps done</span>
   </div>
-</div>`;
+</div>${buildSourceFooter(sourceRefs)}`;
 
   return {
     identifier: `setup-${input.process}`,
     type: "text/html",
     title: input.title,
     content: wrapHtml(body, css, js),
+    sourceRefs: sourceRefs.length ? sourceRefs : undefined,
   };
 }
 
-export function buildSpecsArtifact(input: SpecsInput): AntArtifact {
+export function buildSpecsArtifact(
+  input: SpecsInput,
+  sourceRefs: ArtifactSourceRef[] = []
+): AntArtifact {
   const hasCompare = input.specs.some(s => s.value120v && s.value240v);
 
   const rows = input.specs.map((s, i) => {
@@ -437,17 +503,21 @@ export function buildSpecsArtifact(input: SpecsInput): AntArtifact {
     <h2>Specifications</h2>
   </div>
   ${rows}
-</div>`;
+</div>${buildSourceFooter(sourceRefs)}`;
 
   return {
     identifier: `specs-${input.process}`,
     type: "text/html",
     title: `${input.process.toUpperCase()} Specifications`,
     content: wrapHtml(body, css),
+    sourceRefs: sourceRefs.length ? sourceRefs : undefined,
   };
 }
 
-export function buildWeldDiagnosisArtifact(input: WeldDiagnosisInput): AntArtifact {
+export function buildWeldDiagnosisArtifact(
+  input: WeldDiagnosisInput,
+  sourceRefs: ArtifactSourceRef[] = []
+): AntArtifact {
   const tabs = input.issues.map((issue, i) => `
     <button class="wd-tab ${i === 0 ? "active" : ""}" onclick="showIssue(${i})">${issue.name}</button>
   `).join("");
@@ -504,13 +574,14 @@ function showIssue(i){
   </div>
   <div class="wd-tabs">${tabs}</div>
   ${panels}
-</div>`;
+</div>${buildSourceFooter(sourceRefs)}`;
 
   return {
     identifier: `diagnosis-${input.weldType}`,
     type: "text/html",
     title: `${input.weldType} Weld Diagnosis`,
     content: wrapHtml(body, css, js),
+    sourceRefs: sourceRefs.length ? sourceRefs : undefined,
   };
 }
 
@@ -523,36 +594,43 @@ export function executeVisualTool(
   name: string,
   input: Record<string, unknown>
 ): VisualToolResult | null {
+  const sourceRefs = parseSourcePagesFromToolInput(input);
   switch (name) {
     case "render_duty_cycle":
       return {
         text: "Duty cycle visualization rendered.",
-        artifact: buildDutyCycleArtifact(input as unknown as DutyCycleInput),
+        artifact: buildDutyCycleArtifact(input as unknown as DutyCycleInput, sourceRefs),
       };
     case "render_polarity_setup":
       return {
         text: "Polarity diagram rendered.",
-        artifact: buildPolarityArtifact(input as unknown as PolarityInput),
+        artifact: buildPolarityArtifact(input as unknown as PolarityInput, sourceRefs),
       };
     case "render_troubleshooting":
       return {
         text: "Interactive troubleshooting guide rendered.",
-        artifact: buildTroubleshootingArtifact(input as unknown as TroubleshootingInput),
+        artifact: buildTroubleshootingArtifact(
+          input as unknown as TroubleshootingInput,
+          sourceRefs
+        ),
       };
     case "render_setup_guide":
       return {
         text: "Step-by-step setup guide rendered.",
-        artifact: buildSetupGuideArtifact(input as unknown as SetupGuideInput),
+        artifact: buildSetupGuideArtifact(input as unknown as SetupGuideInput, sourceRefs),
       };
     case "render_specifications":
       return {
         text: "Specifications overview rendered.",
-        artifact: buildSpecsArtifact(input as unknown as SpecsInput),
+        artifact: buildSpecsArtifact(input as unknown as SpecsInput, sourceRefs),
       };
     case "render_weld_diagnosis":
       return {
         text: "Weld diagnosis guide rendered.",
-        artifact: buildWeldDiagnosisArtifact(input as unknown as WeldDiagnosisInput),
+        artifact: buildWeldDiagnosisArtifact(
+          input as unknown as WeldDiagnosisInput,
+          sourceRefs
+        ),
       };
     default:
       return null;

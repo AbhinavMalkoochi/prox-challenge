@@ -7,6 +7,7 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mj
 import type { PDFDocumentProxy } from "pdfjs-dist";
 
 import type { Citation } from "@/lib/chat/types";
+import { citationAnchorId } from "@/lib/chat/source-anchor";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
@@ -149,7 +150,10 @@ function SourceCard({ citation }: { citation: Citation }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className={`source-card ${expanded ? "expanded" : ""}`}>
+    <div
+      className={`source-card ${expanded ? "expanded" : ""}`}
+      id={citationAnchorId(citation.manualId, citation.pageNumber)}
+    >
       <button
         className="source-card-header"
         onClick={() => setExpanded((v) => !v)}
@@ -169,6 +173,13 @@ function SourceCard({ citation }: { citation: Citation }) {
             <span className="source-card-section">{citation.pageTitle}</span>
           )}
           <p className="source-card-excerpt">{citation.excerpt}</p>
+          {citation.linkedArtifactTitles &&
+            citation.linkedArtifactTitles.length > 0 && (
+              <p className="source-linked-visuals">
+                <span className="source-linked-label">Grounds these visuals:</span>{" "}
+                {citation.linkedArtifactTitles.join(" · ")}
+              </p>
+            )}
         </div>
         <span className="source-card-chevron">
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

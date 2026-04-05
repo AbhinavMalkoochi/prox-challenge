@@ -1,3 +1,9 @@
+/** Page in a manual that grounds an artifact or citation. */
+export type ArtifactSourceRef = {
+  manualId: string;
+  pageNumber: number;
+};
+
 export type Citation = {
   manualId: string;
   pageNumber: number;
@@ -5,6 +11,8 @@ export type Citation = {
   title?: string;
   pageTitle?: string;
   sourceKind?: string;
+  /** Visuals in the same answer that cite this page (for linking UI). */
+  linkedArtifactTitles?: string[];
 };
 
 export type AntArtifact = {
@@ -13,6 +21,8 @@ export type AntArtifact = {
   title: string;
   language?: string;
   content: string;
+  /** Manual pages the model used to build this visual (from tool input). */
+  sourceRefs?: ArtifactSourceRef[];
 };
 
 export type ChatAnswer = {

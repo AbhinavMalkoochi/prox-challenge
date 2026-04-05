@@ -3,14 +3,19 @@ import Anthropic from "@anthropic-ai/sdk";
 import { MANUALS } from "@/lib/manuals";
 import { searchManual, type SearchHit } from "@/lib/knowledge/search";
 import { getKnowledgeStore, getPageKey } from "@/lib/knowledge/store";
-import type { AntArtifact, ChatAnswer, Citation } from "@/lib/chat/types";
+import type {
+  AntArtifact,
+  ChatAnswer,
+  Citation,
+} from "@/lib/chat/types";
 import { ArtifactStreamParser } from "@/lib/chat/artifact-parser";
 import { extractReferencedPages } from "@/lib/chat/extract-pages";
 import { executeVisualTool } from "@/lib/agent/visual-tools";
 
 const client = new Anthropic();
 const MODEL = "claude-haiku-4-5";
-const MAX_TURNS = 8;
+/** Enough for multi-tool demos (search + many render_ calls + final answer). */
+const MAX_TURNS = 12;
 const ARTIFACT_MARKER = "\n\n{{ARTIFACT}}\n\n";
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
@@ -59,7 +64,9 @@ You have six render_ tools. Call them instead of writing raw text when:
 RULES FOR VISUAL TOOLS:
 - You MUST call a render_ tool for any question involving duty cycles, polarity, troubleshooting, setup steps, specs, or weld diagnosis.
 - Fill tool parameters with EXACT data from the manual — never approximate.
-- After the tool renders, add brief explanatory text.
+- Every render_ call MUST include sourcePages: an array of { manualId, pageNumber } copied from the search_manual / get_page_content results you used (at least one entry per visual).
+- In your text after each visual, cite those same pages (e.g. "see page 19") so Sources match the diagram.
+- After the tool renders, add brief explanatory text that ties the visual to those pages.
 - You can combine multiple render_ tools in one response.
 
 <artifacts_info>
@@ -97,6 +104,27 @@ CRITICAL RULES FOR INLINE ARTIFACTS:
 - For complex data with multiple dimensions, use recharts in a React artifact.
 </artifacts_info>`;
 
+const SOURCE_PAGES_PROPERTY = {
+  type: "array" as const,
+  items: {
+    type: "object" as const,
+    properties: {
+      manualId: {
+        type: "string" as const,
+        enum: ["owner-manual", "quick-start-guide", "selection-chart"],
+        description: "Manual ID from search_manual or get_page_content",
+      },
+      pageNumber: {
+        type: "number" as const,
+        description: "1-based page number from those results",
+      },
+    },
+    required: ["manualId", "pageNumber"] as const,
+  },
+  description:
+    "Manual pages this visual is grounded in — copy manualId and pageNumber from search hits. Required on every render_ call.",
+};
+
 const VISUAL_TOOLS: Anthropic.Tool[] = [
   {
     name: "render_duty_cycle",
@@ -121,8 +149,9 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
           description: "Array of duty cycle ratings from the manual",
         },
         continuousAmperage: { type: "number", description: "Amperage for 100% continuous use, if applicable" },
+        sourcePages: SOURCE_PAGES_PROPERTY,
       },
-      required: ["process", "voltage", "ratings"],
+      required: ["process", "voltage", "ratings", "sourcePages"],
     },
   },
   {
@@ -145,8 +174,9 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
           },
         },
         notes: { type: "array", items: { type: "string" }, description: "Important safety or setup notes" },
+        sourcePages: SOURCE_PAGES_PROPERTY,
       },
-      required: ["process", "connections"],
+      required: ["process", "connections", "sourcePages"],
     },
   },
   {
@@ -167,8 +197,9 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
             required: ["cause", "solution"],
           },
         },
+        sourcePages: SOURCE_PAGES_PROPERTY,
       },
-      required: ["problem", "checks"],
+      required: ["problem", "checks", "sourcePages"],
     },
   },
   {
@@ -191,8 +222,9 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
             required: ["instruction"],
           },
         },
+        sourcePages: SOURCE_PAGES_PROPERTY,
       },
-      required: ["process", "title", "steps"],
+      required: ["process", "title", "steps", "sourcePages"],
     },
   },
   {
@@ -214,8 +246,9 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
             required: ["label"],
           },
         },
+        sourcePages: SOURCE_PAGES_PROPERTY,
       },
-      required: ["process", "specs"],
+      required: ["process", "specs", "sourcePages"],
     },
   },
   {
@@ -247,8 +280,9 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
             required: ["name", "description", "causes"],
           },
         },
+        sourcePages: SOURCE_PAGES_PROPERTY,
       },
-      required: ["weldType", "issues"],
+      required: ["weldType", "issues", "sourcePages"],
     },
   },
 ];
@@ -352,9 +386,12 @@ async function executeToolCall(
 
 // ── Citation building ───────────────────────────────────────────────────────
 
+const MAX_CITATIONS = 14;
+
 async function buildCitations(
   answer: string,
-  hits: SearchHit[]
+  hits: SearchHit[],
+  artifacts: AntArtifact[]
 ): Promise<Citation[]> {
   const store = await getKnowledgeStore();
   const referencedPages = extractReferencedPages(answer);
@@ -370,7 +407,7 @@ async function buildCitations(
   const used = new Set<string>();
 
   for (const pageNum of referencedPages) {
-    if (citations.length >= 4) break;
+    if (citations.length >= 6) break;
     const manualsByHitScore = [...MANUALS].sort((a, b) => {
       const aHit = hitsByPage.get(getPageKey(a.id, pageNum));
       const bHit = hitsByPage.get(getPageKey(b.id, pageNum));
@@ -397,7 +434,7 @@ async function buildCitations(
   }
 
   for (const hit of hits) {
-    if (citations.length >= 4) break;
+    if (citations.length >= 10) break;
     const key = getPageKey(hit.manualId, hit.pageNumber);
     if (used.has(key)) continue;
     used.add(key);
@@ -410,6 +447,39 @@ async function buildCitations(
       pageTitle: page?.title ?? hit.title,
       sourceKind: page?.sourceKind ?? hit.sourceKind,
     });
+  }
+
+  mergeArtifacts: for (const art of artifacts) {
+    const refs = art.sourceRefs;
+    if (!refs?.length) continue;
+    for (const ref of refs) {
+      const key = getPageKey(ref.manualId, ref.pageNumber);
+      const existing = citations.find(
+        (c) => c.manualId === ref.manualId && c.pageNumber === ref.pageNumber
+      );
+      if (existing) {
+        if (!existing.linkedArtifactTitles) existing.linkedArtifactTitles = [];
+        if (!existing.linkedArtifactTitles.includes(art.title)) {
+          existing.linkedArtifactTitles.push(art.title);
+        }
+        continue;
+      }
+      if (citations.length >= MAX_CITATIONS) break mergeArtifacts;
+      const page = store.pageMap.get(key);
+      const hit = hitsByPage.get(key);
+      if (!page && !hit) continue;
+      used.add(key);
+      const manual = MANUALS.find((m) => m.id === ref.manualId);
+      citations.push({
+        manualId: ref.manualId,
+        pageNumber: ref.pageNumber,
+        excerpt: hit?.text.slice(0, 220) ?? page?.text.slice(0, 220) ?? page?.title ?? "",
+        title: manual?.title,
+        pageTitle: page?.title ?? hit?.title,
+        sourceKind: page?.sourceKind ?? hit?.sourceKind,
+        linkedArtifactTitles: [art.title],
+      });
+    }
   }
 
   return citations;
@@ -519,7 +589,7 @@ export async function answerQuestion(
   }
 
   args.onStatus?.("Building citations...");
-  const citations = await buildCitations(answer, state.searchHits);
+  const citations = await buildCitations(answer, state.searchHits, state.artifacts);
 
   return {
     mode: "answer",

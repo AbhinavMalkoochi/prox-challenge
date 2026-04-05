@@ -8,6 +8,7 @@ import {
   buildSpecsArtifact,
   buildWeldDiagnosisArtifact,
   executeVisualTool,
+  parseSourcePagesFromToolInput,
 } from "../lib/agent/visual-tools";
 
 describe("buildDutyCycleArtifact", () => {
@@ -64,6 +65,23 @@ describe("buildDutyCycleArtifact", () => {
     });
 
     expect(artifact.content).toContain("badge-amber");
+  });
+
+  it("embeds source footer and sourceRefs when pages provided", () => {
+    const refs = [{ manualId: "owner-manual", pageNumber: 19 }];
+    const artifact = buildDutyCycleArtifact(
+      {
+        process: "mig",
+        voltage: "240",
+        ratings: [{ amperage: 200, percent: 25, weldMinutes: 2.5, restMinutes: 7.5 }],
+      },
+      refs
+    );
+
+    expect(artifact.sourceRefs).toEqual(refs);
+    expect(artifact.content).toContain("artifact-source-footer");
+    expect(artifact.content).toContain("page 19");
+    expect(artifact.content).toContain("Owner");
   });
 });
 
@@ -213,33 +231,70 @@ describe("buildWeldDiagnosisArtifact", () => {
   });
 });
 
+describe("parseSourcePagesFromToolInput", () => {
+  it("parses valid sourcePages", () => {
+    expect(
+      parseSourcePagesFromToolInput({
+        sourcePages: [
+          { manualId: "owner-manual", pageNumber: 24 },
+          { manualId: "selection-chart", pageNumber: 1 },
+        ],
+      })
+    ).toEqual([
+      { manualId: "owner-manual", pageNumber: 24 },
+      { manualId: "selection-chart", pageNumber: 1 },
+    ]);
+  });
+
+  it("filters invalid manual ids and bad page numbers", () => {
+    expect(
+      parseSourcePagesFromToolInput({
+        sourcePages: [
+          { manualId: "owner-manual", pageNumber: 5 },
+          { manualId: "not-a-manual", pageNumber: 1 },
+          { manualId: "quick-start-guide", pageNumber: 0 },
+        ],
+      })
+    ).toEqual([{ manualId: "owner-manual", pageNumber: 5 }]);
+  });
+});
+
 describe("executeVisualTool", () => {
+  const sp = (pages: { manualId: string; pageNumber: number }[]) => ({
+    sourcePages: pages,
+  });
+
   it("returns artifact for render_duty_cycle", () => {
     const result = executeVisualTool("render_duty_cycle", {
       process: "mig",
       voltage: "240",
       ratings: [{ amperage: 200, percent: 25, weldMinutes: 2.5, restMinutes: 7.5 }],
+      ...sp([{ manualId: "owner-manual", pageNumber: 19 }]),
     });
 
     expect(result).not.toBeNull();
     expect(result!.text).toContain("Duty cycle");
     expect(result!.artifact.type).toBe("text/html");
+    expect(result!.artifact.sourceRefs).toEqual([{ manualId: "owner-manual", pageNumber: 19 }]);
   });
 
   it("returns artifact for render_polarity_setup", () => {
     const result = executeVisualTool("render_polarity_setup", {
       process: "tig",
       connections: [{ cable: "Ground", socket: "Positive", polarity: "positive" }],
+      ...sp([{ manualId: "owner-manual", pageNumber: 24 }]),
     });
 
     expect(result).not.toBeNull();
     expect(result!.artifact.content).toContain("Ground");
+    expect(result!.artifact.sourceRefs?.[0].pageNumber).toBe(24);
   });
 
   it("returns artifact for render_troubleshooting", () => {
     const result = executeVisualTool("render_troubleshooting", {
       problem: "Wire Stops",
       checks: [{ cause: "Tangled wire", solution: "Untangle spool" }],
+      ...sp([{ manualId: "owner-manual", pageNumber: 43 }]),
     });
 
     expect(result).not.toBeNull();
@@ -251,6 +306,7 @@ describe("executeVisualTool", () => {
       process: "stick",
       title: "Stick Setup",
       steps: [{ instruction: "Power off" }],
+      ...sp([{ manualId: "owner-manual", pageNumber: 27 }]),
     });
 
     expect(result).not.toBeNull();
@@ -261,6 +317,7 @@ describe("executeVisualTool", () => {
     const result = executeVisualTool("render_specifications", {
       process: "all",
       specs: [{ label: "OCV", value120v: "86V" }],
+      ...sp([{ manualId: "owner-manual", pageNumber: 7 }]),
     });
 
     expect(result).not.toBeNull();
@@ -271,6 +328,7 @@ describe("executeVisualTool", () => {
     const result = executeVisualTool("render_weld_diagnosis", {
       weldType: "Stick",
       issues: [{ name: "Burn-Through", description: "Material melts away", causes: [{ cause: "Too hot", fix: "Reduce current" }] }],
+      ...sp([{ manualId: "owner-manual", pageNumber: 38 }]),
     });
 
     expect(result).not.toBeNull();
