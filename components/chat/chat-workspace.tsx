@@ -5,12 +5,11 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 
-import { ArtifactPanel } from "@/components/chat/artifact-panel";
+import { ArtifactRenderer } from "@/components/chat/artifact-renderer";
 import { parseStreamChunk } from "@/lib/chat/stream";
 import type {
-  Artifact,
+  AntArtifact,
   ChatAnswer,
-  ChatStreamEvent,
   Citation,
 } from "@/lib/chat/types";
 
@@ -21,7 +20,7 @@ type MessageRecord = {
   role: "user" | "assistant";
   content: string;
   citations: Citation[];
-  artifacts: Artifact[];
+  artifacts: AntArtifact[];
 };
 
 const SUGGESTIONS = [
@@ -57,7 +56,7 @@ function InlineContent({
   isStreaming,
 }: {
   content: string;
-  artifacts: Artifact[];
+  artifacts: AntArtifact[];
   isStreaming: boolean;
 }) {
   const parts = content.split(ARTIFACT_MARKER);
@@ -82,10 +81,9 @@ function InlineContent({
 
     if (i < parts.length - 1 && aIdx < artifacts.length) {
       elements.push(
-        <ArtifactPanel
+        <ArtifactRenderer
           key={`a${aIdx}`}
           artifact={artifacts[aIdx]}
-          showEmptyState={false}
         />
       );
       aIdx++;
@@ -94,11 +92,7 @@ function InlineContent({
 
   while (aIdx < artifacts.length) {
     elements.push(
-      <ArtifactPanel
-        key={`a${aIdx}`}
-        artifact={artifacts[aIdx]}
-        showEmptyState={false}
-      />
+      <ArtifactRenderer key={`a${aIdx}`} artifact={artifacts[aIdx]} />
     );
     aIdx++;
   }

@@ -336,204 +336,49 @@ a:hover {
   line-height: 1.6;
 }
 
-/* polarity SVG */
+/* artifact body */
 
-.polarity-svg,
-.wiring-svg {
+.artifact-body {
+  min-height: 0;
+}
+
+/* SVG artifacts rendered directly */
+
+.artifact-svg-container {
+  display: flex;
+  justify-content: center;
+}
+
+.artifact-svg-container svg {
   width: 100%;
-  max-width: 480px;
+  max-width: 560px;
   height: auto;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  overflow: visible;
 }
 
-/* stats grid */
+/* iframe artifacts */
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.stat-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  text-align: center;
-}
-
-.stat-card.accent {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.stat-card span {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.stat-card strong {
-  display: block;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-/* duty bar */
-
-.duty-bar-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.duty-bar {
-  height: 10px;
-  border-radius: var(--radius-full);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.duty-bar-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  background: var(--accent);
-  transition: width 0.4s ease;
-}
-
-.duty-bar-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-/* troubleshooting checklist */
-
-.symptom-badge {
-  margin: 0;
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  background: var(--warning-soft);
-  color: var(--warning);
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.check-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.check-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-.check-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.78rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-/* comparison overflow */
-.comparison-table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* lists */
-
-.artifact-points,
-.artifact-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding-left: 20px;
-  font-size: 0.9rem;
-  line-height: 1.65;
-  color: var(--text-secondary);
-}
-
-/* connections */
-
-.connections-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.connection-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-}
-
-.connection-label {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-.connection-arrow {
-  color: var(--text-muted);
-}
-
-/* comparison table */
-
-.comparison-table {
+.artifact-iframe {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
 }
 
-.comparison-table th,
-.comparison-table td {
-  text-align: left;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-}
+/* code artifacts */
 
-.comparison-table th {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-  background: var(--bg-subtle);
-}
-
-.comparison-table td {
+.artifact-code {
+  margin: 0;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre-wrap;
   color: var(--text);
-}
-
-.comparison-table tr:last-child td {
-  border-bottom: none;
 }
 
 
