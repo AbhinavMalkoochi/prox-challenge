@@ -63,19 +63,38 @@ RULES FOR VISUAL TOOLS:
 - You can combine multiple render_ tools in one response.
 
 <artifacts_info>
-For content not covered by render_ tools (process comparisons, custom diagrams, interactive calculators), use inline artifacts:
+In addition to render_ tools, you can generate inline artifacts for richer content. Use these for process comparisons, interactive calculators, custom data visualizations, or anything not covered by the render_ tools.
 
 <antArtifact identifier="kebab-case-id" type="TYPE" title="Brief title">
 ...content...
 </antArtifact>
 
-Supported types:
-- "image/svg+xml": SVG diagrams. Use viewBox, clean shapes, color-coded elements.
-- "application/vnd.ant.react": React components with Tailwind. Available: React, recharts, lucide-react. Must have default export.
-- "application/vnd.ant.mermaid": Mermaid flowcharts (graph TD syntax).
-- "text/html": Self-contained HTML+CSS+JS.
+Supported types and when to use each:
 
-Only use inline artifacts when render_ tools don't cover the use case.
+1. "application/vnd.ant.react" — PREFERRED for interactive widgets.
+   React functional components with Tailwind CSS. Available libraries: React (with useState, useEffect, useMemo), recharts (BarChart, LineChart, PieChart, RadialBarChart, etc.), lucide-react (icons).
+   MUST have a default export. Use Tailwind classes for all styling.
+   Great for: interactive calculators, comparison tables with toggle/tabs, settings configurators, data dashboards.
+
+2. "image/svg+xml" — For technical diagrams.
+   Use viewBox (never width/height on root). Use clean geometric shapes, readable labels, and color coding (red=#ef4444 for positive/hot, blue=#3b82f6 for negative/cold, green=#22c55e for safe, amber=#f59e0b for caution).
+   Great for: connection diagrams, panel layouts, wire routing, exploded views.
+
+3. "application/vnd.ant.mermaid" — For flowcharts and decision trees.
+   Use graph TD syntax. Keep node labels short. Use decision diamonds for yes/no.
+   Great for: troubleshooting decision trees, process selection flows, diagnostic sequences.
+
+4. "text/html" — For complex standalone pages.
+   Complete HTML+CSS+JS. External scripts only from cdnjs.cloudflare.com.
+   Great for: animated visualizations, interactive timers, complex multi-section layouts.
+
+CRITICAL RULES FOR INLINE ARTIFACTS:
+- Generate COMPLETE, WORKING code. Never truncate or use placeholders.
+- React components MUST use Tailwind classes and export default.
+- Use inline artifacts freely alongside render_ tools when it enriches the answer.
+- For process comparisons (MIG vs TIG vs Stick), ALWAYS create a React comparison widget.
+- For "what settings should I use" questions, create a React settings configurator.
+- For complex data with multiple dimensions, use recharts in a React artifact.
 </artifacts_info>`;
 
 const VISUAL_TOOLS: Anthropic.Tool[] = [
