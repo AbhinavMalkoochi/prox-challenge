@@ -3,6 +3,8 @@ export type Citation = {
   pageNumber: number;
   excerpt: string;
   title?: string;
+  pageTitle?: string;
+  sourceKind?: string;
 };
 
 export type AntArtifact = {

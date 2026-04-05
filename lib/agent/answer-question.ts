@@ -3,10 +3,6 @@ import Anthropic from "@anthropic-ai/sdk";
 import { MANUALS } from "@/lib/manuals";
 import { searchManual, type SearchHit } from "@/lib/knowledge/search";
 import { getKnowledgeStore, getPageKey } from "@/lib/knowledge/store";
-import {
-  findBestExcerptMatch,
-  normalizeExcerptText,
-} from "@/lib/knowledge/excerpt-match";
 import type { AntArtifact, ChatAnswer, Citation } from "@/lib/chat/types";
 import { ArtifactStreamParser } from "@/lib/chat/artifact-parser";
 
@@ -207,60 +203,76 @@ async function executeToolCall(
 
 // ── Citation building ───────────────────────────────────────────────────────
 
-function chooseExcerptSentence(question: string, excerpt: string): string {
-  const sentences = excerpt
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (sentences.length === 0) return excerpt.slice(0, 240);
-
-  const questionTokens = new Set(
-    normalizeExcerptText(question).split(" ").filter((t) => t.length >= 2)
-  );
-
-  let best = sentences[0];
-  let bestScore = -1;
-  for (const sentence of sentences) {
-    const tokens = new Set(
-      normalizeExcerptText(sentence).split(" ").filter(Boolean)
-    );
-    let score = 0;
-    for (const t of questionTokens) if (tokens.has(t)) score++;
-    if (score > bestScore) {
-      bestScore = score;
-      best = sentence;
+function extractReferencedPages(text: string): number[] {
+  const pages: number[] = [];
+  const patterns = [
+    /(?:pages?|p\.?)\s*(\d+(?:\s*[,&]+\s*\d+)*)/gi,
+    /\(page\s*(\d+)\)/gi,
+  ];
+  for (const re of patterns) {
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const nums = m[1].match(/\d+/g);
+      if (nums) pages.push(...nums.map(Number));
     }
   }
-  return best.length > 240 ? `${best.slice(0, 237)}...` : best;
+  return [...new Set(pages)];
 }
 
 async function buildCitations(
-  question: string,
+  answer: string,
   hits: SearchHit[]
 ): Promise<Citation[]> {
   const store = await getKnowledgeStore();
-  const pageHits = new Map<string, SearchHit>();
+  const referencedPages = extractReferencedPages(answer);
 
+  const hitsByPage = new Map<string, SearchHit>();
   for (const hit of hits) {
     const key = getPageKey(hit.manualId, hit.pageNumber);
-    const current = pageHits.get(key);
-    if (!current || hit.score > current.score) pageHits.set(key, hit);
-    if (pageHits.size >= 3) break;
+    const existing = hitsByPage.get(key);
+    if (!existing || hit.score > existing.score) hitsByPage.set(key, hit);
   }
 
-  return [...pageHits.values()].map((hit) => {
-    const page = store.pageMap.get(getPageKey(hit.manualId, hit.pageNumber));
-    const match = page ? findBestExcerptMatch(page, hit.text) : null;
-    const excerptSource = match?.excerptText ?? hit.text;
-    const title = MANUALS.find((m) => m.id === hit.manualId)?.title;
+  const citations: Citation[] = [];
+  const used = new Set<string>();
 
-    return {
+  for (const pageNum of referencedPages) {
+    if (citations.length >= 4) break;
+    for (const manual of MANUALS) {
+      const key = getPageKey(manual.id, pageNum);
+      if (used.has(key)) continue;
+      const hit = hitsByPage.get(key);
+      const page = store.pageMap.get(key);
+      if (!hit && !page) continue;
+      used.add(key);
+      citations.push({
+        manualId: manual.id,
+        pageNumber: pageNum,
+        excerpt: hit?.text.slice(0, 220) ?? page?.title ?? "",
+        title: manual.title,
+        pageTitle: page?.title ?? hit?.title,
+        sourceKind: page?.sourceKind ?? hit?.sourceKind,
+      });
+    }
+  }
+
+  for (const hit of hits) {
+    if (citations.length >= 4) break;
+    const key = getPageKey(hit.manualId, hit.pageNumber);
+    if (used.has(key)) continue;
+    used.add(key);
+    const page = store.pageMap.get(key);
+    citations.push({
       manualId: hit.manualId,
       pageNumber: hit.pageNumber,
-      excerpt: chooseExcerptSentence(question, excerptSource),
-      title,
-    };
-  });
+      excerpt: hit.text.slice(0, 220),
+      title: MANUALS.find((m) => m.id === hit.manualId)?.title,
+      pageTitle: page?.title ?? hit.title,
+      sourceKind: page?.sourceKind ?? hit.sourceKind,
+    });
+  }
+
+  return citations;
 }
 
 // ── Main entry point ────────────────────────────────────────────────────────
@@ -362,16 +374,12 @@ export async function answerQuestion(
   }
 
   args.onStatus?.("Building citations...");
-  const citations = await buildCitations(args.question, state.searchHits);
-  const augmentedCitations = citations.map((c) => ({
-    ...c,
-    title: c.title ?? MANUALS.find((m) => m.id === c.manualId)?.title,
-  }));
+  const citations = await buildCitations(answer, state.searchHits);
 
   return {
     mode: "answer",
     answer,
-    citations: augmentedCitations,
+    citations,
     artifacts: state.artifacts,
   };
 }

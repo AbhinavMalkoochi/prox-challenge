@@ -1,11 +1,10 @@
 "use client";
 
-import { Fragment } from "react";
-import Link from "next/link";
 import { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 
 import { ArtifactRenderer } from "@/components/chat/artifact-renderer";
+import { SourceCards } from "@/components/chat/source-cards";
 import { parseStreamChunk } from "@/lib/chat/stream";
 import type {
   AntArtifact,
@@ -29,26 +28,6 @@ const SUGGESTIONS = [
   "I'm getting porosity in my welds",
   "Compare MIG vs flux-cored",
 ];
-
-function CitationLinks({ citations }: { citations: Citation[] }) {
-  if (citations.length === 0) return null;
-
-  return (
-    <div className="citation-list">
-      {citations.map((citation, index) => (
-        <Link
-          className="citation-link"
-          href={`/source/${citation.manualId}/${citation.pageNumber}?quote=${encodeURIComponent(citation.excerpt)}`}
-          key={`${citation.manualId}-${citation.pageNumber}-${index}`}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          p.{citation.pageNumber} — {citation.title ?? citation.manualId}
-        </Link>
-      ))}
-    </div>
-  );
-}
 
 function InlineContent({
   content,
@@ -311,7 +290,7 @@ export function ChatWorkspace() {
                     />
                   )}
 
-                  <CitationLinks citations={msg.citations} />
+                  <SourceCards citations={msg.citations} />
                 </div>
               ))}
             </div>
