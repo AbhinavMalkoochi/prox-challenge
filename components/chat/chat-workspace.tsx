@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
+import Markdown from "react-markdown";
 
 import { ArtifactRenderer } from "@/components/chat/artifact-renderer";
 import { SourceCards } from "@/components/chat/source-cards";
@@ -46,8 +47,8 @@ function InlineContent({
     const text = parts[i].replace(/^\n+|\n+$/g, "");
     if (text) {
       elements.push(
-        <div key={`t${i}`} className="message-content">
-          {text}
+        <div key={`t${i}`} className="message-content md-content">
+          <Markdown>{text}</Markdown>
         </div>
       );
     } else if (i === 0 && parts.length === 1 && isStreaming) {

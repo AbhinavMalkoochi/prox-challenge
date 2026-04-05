@@ -28,13 +28,26 @@ export class ArtifactStreamParser {
   }
 
   flush() {
-    if (this.buffer) {
-      this.cb.onText(this.buffer);
-      this.buffer = "";
-    }
-    if (this.artifactContent) {
-      this.cb.onText(this.artifactContent);
-      this.artifactContent = "";
+    switch (this.mode) {
+      case "thinking":
+      case "tag":
+        this.buffer = "";
+        this.tagStr = "";
+        break;
+      case "content":
+        if (this.artifactContent) {
+          this.cb.onText(this.artifactContent);
+        }
+        this.artifactContent = "";
+        this.meta = null;
+        this.buffer = "";
+        break;
+      case "text":
+        if (this.buffer) {
+          this.cb.onText(this.buffer);
+          this.buffer = "";
+        }
+        break;
     }
     this.mode = "text";
   }
@@ -191,7 +204,7 @@ export class ArtifactStreamParser {
     const tags = ["</antartifact>", "</artifact>", "</mermaid>"];
     const low = this.lower();
     for (const tag of tags) {
-      for (let len = 2; len < tag.length && len <= low.length; len++) {
+      for (let len = 1; len < tag.length && len <= low.length; len++) {
         if (low.endsWith(tag.slice(0, len))) {
           return this.buffer.length - len;
         }
@@ -204,7 +217,7 @@ export class ArtifactStreamParser {
     const tags = ["<antthinking", "<antartifact", "<artifact "];
     const low = this.lower();
     for (const tag of tags) {
-      for (let len = 2; len < tag.length && len <= low.length; len++) {
+      for (let len = 1; len < tag.length && len <= low.length; len++) {
         if (low.endsWith(tag.slice(0, len))) {
           return this.buffer.length - len;
         }
@@ -217,7 +230,7 @@ export class ArtifactStreamParser {
     const low = this.lower();
     for (let len = 1; len < closeTag.length && len <= low.length; len++) {
       if (low.endsWith(closeTag.slice(0, len))) {
-        return this.buffer.length - len;
+        return low.length - len;
       }
     }
     return -1;

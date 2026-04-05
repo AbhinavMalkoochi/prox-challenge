@@ -180,7 +180,7 @@ function scoreMetadata(
 function scoreNumericMatches(text: string, queryNumbers: string[]): number {
   if (queryNumbers.length === 0) return 0;
   return queryNumbers.reduce(
-    (acc, val) => acc + (text.includes(val) ? 4 : 0),
+    (acc, val) => acc + (new RegExp(`\\b${val}\\b`).test(text) ? 4 : 0),
     0
   );
 }
@@ -231,7 +231,7 @@ function runBm25Search(
 
   const scored: ScoredChunk[] = [];
   for (const chunk of chunks) {
-    const docTokens = chunk.normalizedText.split(" ").filter(Boolean);
+    const docTokens = normalizeExcerptText(chunk.text).split(" ").filter(Boolean);
     const score = computeBm25Score(queryTerms, docTokens, idfMap, avgDocLength);
     if (score > 0) {
       scored.push({ chunk, score });
@@ -250,7 +250,7 @@ function runNgramSearch(
 
   const scored: ScoredChunk[] = [];
   for (const chunk of chunks) {
-    const docTokens = chunk.normalizedText.split(" ").filter(Boolean);
+    const docTokens = normalizeExcerptText(chunk.text).split(" ").filter(Boolean);
     const score = scoreNgramOverlap(queryTokens, docTokens);
     if (score > 0) {
       scored.push({ chunk, score });
@@ -293,18 +293,28 @@ function rerankWithHybridSignals(
   const bm25Scores = buildBm25Map(bm25Results);
   const ngramScores = buildNgramMap(ngramResults);
 
-  return lexicalResults
-    .map(({ chunk, score: lexicalScore }) => {
+  const seen = new Set<string>();
+  const candidates: ScoredChunk[] = [...lexicalResults];
+  for (const r of lexicalResults) seen.add(r.chunk.id);
+  for (const r of bm25Results) {
+    if (!seen.has(r.chunk.id)) { seen.add(r.chunk.id); candidates.push(r); }
+  }
+  for (const r of ngramResults) {
+    if (!seen.has(r.chunk.id)) { seen.add(r.chunk.id); candidates.push(r); }
+  }
+
+  return candidates
+    .map(({ chunk, score: baseScore }) => {
       const fullText = `${chunk.manualTitle} ${chunk.title} ${chunk.text}`;
       const bm25Boost = (bm25Scores.get(chunk.id) ?? 0) * 3;
       const ngramBoost = (ngramScores.get(chunk.id) ?? 0) * 4;
       const numericBoost = scoreNumericMatches(fullText, queryNumbers) * 0.3;
-      const metadataBoost = scoreMetadata(chunk, query, filters) * 8;
+      const metadataBoost = scoreMetadata(chunk, query, filters) * 5;
 
       return {
         ...chunk,
         score:
-          lexicalScore + bm25Boost + ngramBoost + numericBoost + metadataBoost,
+          baseScore + bm25Boost + ngramBoost + numericBoost + metadataBoost,
       };
     })
     .sort((a, b) => b.score - a.score);

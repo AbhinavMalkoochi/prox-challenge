@@ -5,9 +5,10 @@ import { searchManual, type SearchHit } from "@/lib/knowledge/search";
 import { getKnowledgeStore, getPageKey } from "@/lib/knowledge/store";
 import type { AntArtifact, ChatAnswer, Citation } from "@/lib/chat/types";
 import { ArtifactStreamParser } from "@/lib/chat/artifact-parser";
+import { extractReferencedPages } from "@/lib/chat/extract-pages";
 
 const client = new Anthropic();
-const MODEL = "claude-sonnet-4-5-20250929";
+const MODEL = "claude-haiku-4-5";
 const MAX_TURNS = 6;
 const ARTIFACT_MARKER = "\n\n{{ARTIFACT}}\n\n";
 
@@ -202,22 +203,6 @@ async function executeToolCall(
 }
 
 // ── Citation building ───────────────────────────────────────────────────────
-
-function extractReferencedPages(text: string): number[] {
-  const pages: number[] = [];
-  const patterns = [
-    /(?:pages?|p\.?)\s*(\d+(?:\s*[,&]+\s*\d+)*)/gi,
-    /\(page\s*(\d+)\)/gi,
-  ];
-  for (const re of patterns) {
-    let m;
-    while ((m = re.exec(text)) !== null) {
-      const nums = m[1].match(/\d+/g);
-      if (nums) pages.push(...nums.map(Number));
-    }
-  }
-  return [...new Set(pages)];
-}
 
 async function buildCitations(
   answer: string,
