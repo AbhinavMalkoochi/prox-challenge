@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { Artifact } from "@/lib/chat/types";
 
 function listKey(prefix: string, value: string, index: number) {
@@ -39,29 +38,24 @@ function PolarityArtifactView(props: Extract<Artifact, { type: "polarity_setup" 
           VULCAN OMNIPRO 220
         </text>
 
-        {/* Positive socket */}
         <circle cx="150" cy="105" r="38" fill="#dcfce7" stroke="#16a34a" strokeWidth="2.5" />
         <text x="150" y="100" textAnchor="middle" fontSize="28" fontWeight="bold" fill="#16a34a">+</text>
         <text x="150" y="118" textAnchor="middle" fontSize="9" fill="#15803d" fontWeight="500">POSITIVE</text>
 
-        {/* Positive label */}
         <rect x="90" y="155" width="120" height="26" rx="13" fill="#16a34a" />
         <text x="150" y="172" textAnchor="middle" fontSize="11" fontWeight="600" fill="white">
           {positiveLabel.length > 16 ? positiveLabel.slice(0, 14) + "..." : positiveLabel}
         </text>
 
-        {/* Negative socket */}
         <circle cx="310" cy="105" r="38" fill="#dbeafe" stroke="#2563eb" strokeWidth="2.5" />
         <text x="310" y="100" textAnchor="middle" fontSize="28" fontWeight="bold" fill="#2563eb">−</text>
         <text x="310" y="118" textAnchor="middle" fontSize="9" fill="#1d4ed8" fontWeight="500">NEGATIVE</text>
 
-        {/* Negative label */}
         <rect x="250" y="155" width="120" height="26" rx="13" fill="#2563eb" />
         <text x="310" y="172" textAnchor="middle" fontSize="11" fontWeight="600" fill="white">
           {negativeLabel.length > 16 ? negativeLabel.slice(0, 14) + "..." : negativeLabel}
         </text>
 
-        {/* Connection arrows */}
         <line x1="150" y1="143" x2="150" y2="155" stroke="#16a34a" strokeWidth="2" markerEnd="url(#arrowGreen)" />
         <line x1="310" y1="143" x2="310" y2="155" stroke="#2563eb" strokeWidth="2" markerEnd="url(#arrowBlue)" />
 
@@ -171,30 +165,6 @@ function TroubleshootingArtifactView(props: Extract<Artifact, { type: "troublesh
   );
 }
 
-// ── Settings ────────────────────────────────────────────────────────────────
-
-function SettingsArtifactView(props: Extract<Artifact, { type: "settings" }>) {
-  const summary = props.summary ?? "";
-  const points = safeArray(props.points);
-
-  return (
-    <div className="artifact-card">
-      <div className="artifact-header">
-        <p className="eyebrow">Setup guide</p>
-        <h3>{props.title ?? "Recommended Settings"}</h3>
-        {summary && <p>{summary}</p>}
-      </div>
-      {points.length > 0 && (
-        <ul className="artifact-points">
-          {points.map((point, i) => (
-            <li key={listKey("sp", point, i)}>{point}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 // ── Wiring Diagram (SVG) ───────────────────────────────────────────────────
 
 function WiringDiagramArtifactView(props: Extract<Artifact, { type: "wiring_diagram" }>) {
@@ -275,37 +245,6 @@ function WiringDiagramArtifactView(props: Extract<Artifact, { type: "wiring_diag
   );
 }
 
-// ── Page Reference ──────────────────────────────────────────────────────────
-
-function PageReferenceArtifactView(props: Extract<Artifact, { type: "page_reference" }>) {
-  const description = props.description ?? "";
-  const callouts = safeArray(props.callouts);
-  const manualId = props.manualId ?? "owner-manual";
-  const pageNumber = props.pageNumber ?? 1;
-
-  return (
-    <div className="artifact-card">
-      <div className="artifact-header">
-        <p className="eyebrow">Manual reference</p>
-        <h3>{props.title ?? "Page Reference"}</h3>
-        {description && <p>{description}</p>}
-      </div>
-      {callouts.length > 0 && (
-        <div className="page-ref-callouts">
-          {callouts.map((callout, i) => (
-            <div className="page-ref-callout" key={listKey("pc", callout, i)}>
-              {callout}
-            </div>
-          ))}
-        </div>
-      )}
-      <Link className="page-ref-link" href={`/source/${manualId}/${pageNumber}`} target="_blank">
-        View page {pageNumber} →
-      </Link>
-    </div>
-  );
-}
-
 // ── Comparison Table ────────────────────────────────────────────────────────
 
 function ComparisonTableArtifactView(props: Extract<Artifact, { type: "comparison_table" }>) {
@@ -354,66 +293,6 @@ function ComparisonTableArtifactView(props: Extract<Artifact, { type: "compariso
   );
 }
 
-// ── Process Selector ────────────────────────────────────────────────────────
-
-function ProcessSelectorArtifactView(props: Extract<Artifact, { type: "process_selector" }>) {
-  const description = props.description ?? "";
-  const options = Array.isArray(props.options) ? props.options : [];
-
-  return (
-    <div className="artifact-card">
-      <div className="artifact-header">
-        <p className="eyebrow">Process selector</p>
-        <h3>{props.title ?? "Process Guide"}</h3>
-        {description && <p>{description}</p>}
-      </div>
-      <div className="process-options">
-        {options.map((opt, i) => (
-          <div className="process-option" key={listKey("ps", opt?.process ?? String(i), i)}>
-            <h4>{opt?.process ?? "Unknown"}</h4>
-            {opt?.bestFor && <p>{opt.bestFor}</p>}
-            {safeArray(opt?.keySettings).length > 0 && (
-              <div className="process-option-settings">
-                {safeArray(opt.keySettings).map((setting, j) => (
-                  <span key={`${opt?.process}-${j}`}>{setting}</span>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── Parts Reference ─────────────────────────────────────────────────────────
-
-function PartsReferenceArtifactView(props: Extract<Artifact, { type: "parts_reference" }>) {
-  const description = props.description ?? "";
-  const parts = Array.isArray(props.parts) ? props.parts : [];
-
-  return (
-    <div className="artifact-card">
-      <div className="artifact-header">
-        <p className="eyebrow">Parts reference</p>
-        <h3>{props.title ?? "Parts List"}</h3>
-        {description && <p>{description}</p>}
-      </div>
-      {parts.length > 0 && (
-        <div className="parts-list">
-          {parts.map((part, i) => (
-            <div className="part-row" key={listKey("pr", part?.number ?? String(i), i)}>
-              <span className="part-number">{part?.number ?? "—"}</span>
-              <span className="part-name">{part?.name ?? "—"}</span>
-              <span className="part-desc">{part?.description ?? ""}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── Main Panel ──────────────────────────────────────────────────────────────
 
 export function ArtifactPanel({
@@ -443,18 +322,10 @@ export function ArtifactPanel({
       return <DutyCycleArtifactView {...artifact} />;
     case "troubleshooting":
       return <TroubleshootingArtifactView {...artifact} />;
-    case "settings":
-      return <SettingsArtifactView {...artifact} />;
     case "wiring_diagram":
       return <WiringDiagramArtifactView {...artifact} />;
-    case "page_reference":
-      return <PageReferenceArtifactView {...artifact} />;
     case "comparison_table":
       return <ComparisonTableArtifactView {...artifact} />;
-    case "process_selector":
-      return <ProcessSelectorArtifactView {...artifact} />;
-    case "parts_reference":
-      return <PartsReferenceArtifactView {...artifact} />;
     default:
       return null;
   }

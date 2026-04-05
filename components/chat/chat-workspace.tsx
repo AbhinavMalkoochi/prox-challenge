@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
@@ -12,6 +13,8 @@ import type {
   ChatStreamEvent,
   Citation,
 } from "@/lib/chat/types";
+
+const ARTIFACT_MARKER = "{{ARTIFACT}}";
 
 type MessageRecord = {
   id: string;
@@ -46,6 +49,69 @@ function CitationLinks({ citations }: { citations: Citation[] }) {
       ))}
     </div>
   );
+}
+
+function InlineContent({
+  content,
+  artifacts,
+  isStreaming,
+}: {
+  content: string;
+  artifacts: Artifact[];
+  isStreaming: boolean;
+}) {
+  const parts = content.split(ARTIFACT_MARKER);
+  const elements: React.ReactNode[] = [];
+  let aIdx = 0;
+
+  for (let i = 0; i < parts.length; i++) {
+    const text = parts[i].replace(/^\n+|\n+$/g, "");
+    if (text) {
+      elements.push(
+        <div key={`t${i}`} className="message-content">
+          {text}
+        </div>
+      );
+    } else if (i === 0 && parts.length === 1 && isStreaming) {
+      elements.push(
+        <div key="placeholder" className="message-content">
+          {"\u00a0"}
+        </div>
+      );
+    }
+
+    if (i < parts.length - 1 && aIdx < artifacts.length) {
+      elements.push(
+        <ArtifactPanel
+          key={`a${aIdx}`}
+          artifact={artifacts[aIdx]}
+          showEmptyState={false}
+        />
+      );
+      aIdx++;
+    }
+  }
+
+  while (aIdx < artifacts.length) {
+    elements.push(
+      <ArtifactPanel
+        key={`a${aIdx}`}
+        artifact={artifacts[aIdx]}
+        showEmptyState={false}
+      />
+    );
+    aIdx++;
+  }
+
+  if (elements.length === 0 && isStreaming) {
+    elements.push(
+      <div key="placeholder" className="message-content">
+        {"\u00a0"}
+      </div>
+    );
+  }
+
+  return <>{elements}</>;
 }
 
 function updateMessage(
@@ -114,13 +180,9 @@ export function ChatWorkspace() {
       const contentType = response.headers.get("content-type") ?? "";
 
       if (contentType.includes("application/json")) {
-        const payload = (await response.json()) as
-          | ChatAnswer
-          | { error: string };
+        const payload = (await response.json()) as ChatAnswer | { error: string };
         if (!response.ok || "error" in payload) {
-          throw new Error(
-            "error" in payload ? payload.error : "Request failed."
-          );
+          throw new Error("error" in payload ? payload.error : "Request failed.");
         }
         setMessages((cur) =>
           updateMessage(cur, assistantId, (m) => ({
@@ -240,25 +302,21 @@ export function ChatWorkspace() {
           ) : (
             <div className="message-list">
               {messages.map((msg) => (
-                <div
-                  className={`message-card ${msg.role}`}
-                  key={msg.id}
-                >
+                <div className={`message-card ${msg.role}`} key={msg.id}>
                   <span className="message-label">
                     {msg.role === "user" ? "You" : "Copilot"}
                   </span>
-                  <p className="message-content">
-                    {msg.content ||
-                      (msg.role === "assistant" && isPending ? " " : "")}
-                  </p>
-                  {msg.role === "assistant" &&
-                    msg.artifacts.map((artifact, i) => (
-                      <ArtifactPanel
-                        artifact={artifact}
-                        key={`${artifact.type}-${i}`}
-                        showEmptyState={false}
-                      />
-                    ))}
+
+                  {msg.role === "user" ? (
+                    <div className="message-content">{msg.content}</div>
+                  ) : (
+                    <InlineContent
+                      content={msg.content}
+                      artifacts={msg.artifacts}
+                      isStreaming={isPending && msg.id === messages[messages.length - 1]?.id}
+                    />
+                  )}
+
                   <CitationLinks citations={msg.citations} />
                 </div>
               ))}

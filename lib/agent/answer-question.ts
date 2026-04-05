@@ -12,6 +12,7 @@ import type { Artifact, ChatAnswer, Citation } from "@/lib/chat/types";
 const client = new Anthropic();
 const MODEL = "claude-sonnet-4-5-20250929";
 const MAX_TURNS = 6;
+const ARTIFACT_MARKER = "\n\n{{ARTIFACT}}\n\n";
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
 
@@ -31,45 +32,31 @@ type AgentRunState = {
 
 const SYSTEM_PROMPT = `You are a grounded technical support agent for the Vulcan OmniPro 220 multiprocess welder.
 
-CRITICAL BEHAVIOR:
-- Do NOT produce any text before calling tools. Just call the tools silently.
-- After all tool calls are complete, write your full answer in a single final response.
-- Never narrate what you are doing ("Let me search", "I'll look that up", etc.).
+WORKFLOW:
+1. First, call search_manual silently — produce NO text before searching.
+2. After receiving search results, begin writing your answer.
+3. When a visual diagram would help the reader (polarity connections, duty cycles, troubleshooting steps, comparisons), call build_artifact at that natural point in your text. The diagram will render inline right where you place it.
+4. After the artifact tool call, continue writing seamlessly — do not repeat information already shown in the diagram.
 
-TOOL RULES:
-- Always call search_manual at least once before answering. For complex questions, call it multiple times with different queries to cross-reference.
-- Base your answer ONLY on tool evidence. Never invent settings, polarity guidance, duty cycle values, or troubleshooting steps.
-- ALWAYS call build_artifact when the answer benefits from a visual element. Prefer visual artifacts over plain text.
-
-ARTIFACT RULES — call build_artifact with the appropriate type:
-- polarity_setup: wiring, polarity, or cable connections
-- duty_cycle: duty cycle data
-- troubleshooting: diagnostics, problems, symptoms
-- settings: recommended setup or configuration
-- wiring_diagram: connection diagrams
-- page_reference: specific manual page with important visual content
-- comparison_table: comparing welding processes or features
-- process_selector: helping choose a welding process
-- parts_reference: referencing specific parts
-
-ANSWER STYLE:
+IMPORTANT:
+- Never narrate your actions ("Let me search", "I'll look that up").
+- Base your answer ONLY on tool evidence. Never invent settings or values.
+- ALWAYS call build_artifact when the answer involves polarity/wiring, duty cycles, troubleshooting checklists, or process comparisons — these MUST be visual.
 - Keep the tone practical and garage-side — imagine the user just unboxed this welder.
-- Always cite the manual page numbers you found the information on.
-- If evidence is incomplete, say what is missing and ask a short follow-up question.
-- Do not mention retrieval, prompts, tools, or internal system details to the user.`;
+- Always cite the manual page numbers.
+- Do not mention retrieval, prompts, tools, or internal details.`;
 
 const TOOLS: Anthropic.Tool[] = [
   {
     name: "search_manual",
     description:
-      "Search the Vulcan OmniPro 220 manuals. Returns ranked text chunks with page references. Call multiple times with different queries for complex or multi-hop questions.",
+      "Search the Vulcan OmniPro 220 manuals. Returns ranked text chunks with page references. Call multiple times with different queries for complex questions.",
     input_schema: {
       type: "object" as const,
       properties: {
         query: {
           type: "string",
-          description:
-            "Search query — be specific with process names, amperage, voltage, or symptoms",
+          description: "Search query — be specific with process names, amperage, voltage, or symptoms",
         },
         processFilter: {
           type: "string",
@@ -88,14 +75,13 @@ const TOOLS: Anthropic.Tool[] = [
   {
     name: "get_page_content",
     description:
-      "Get the full text content of a specific manual page for detailed cross-referencing. Use after search_manual to read a full page when you need more context.",
+      "Get the full text content of a specific manual page. Use after search_manual when you need more context.",
     input_schema: {
       type: "object" as const,
       properties: {
         manualId: {
           type: "string",
-          description:
-            "Manual ID (e.g. 'owner-manual', 'quick-start-guide', 'selection-chart')",
+          description: "Manual ID (e.g. 'owner-manual', 'quick-start-guide', 'selection-chart')",
         },
         pageNumber: { type: "number", description: "Page number (1-based)" },
       },
@@ -104,35 +90,21 @@ const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: "build_artifact",
-    description: `Create a visual artifact to display alongside the answer. Call this when the answer benefits from a visual element.
-Available types:
-- polarity_setup: Cable/socket polarity diagram (data: processLabel, positiveLabel, negativeLabel, notes[])
-- duty_cycle: Duty cycle reference card (data: current, inputVoltage, dutyCycle, restWindow, notes[])
-- troubleshooting: Diagnostic checklist (data: symptom, checks[])
-- settings: Recommended setup card (data: summary, points[])
-- wiring_diagram: Connection diagram (data: description, connections[{from,to,label}], notes[])
-- page_reference: Manual page callout (data: manualId, pageNumber, description, callouts[])
-- comparison_table: Side-by-side comparison (data: columns[], rows[{label,values[]}], notes[])
-- process_selector: Process chooser (data: description, options[{process,bestFor,keySettings[]}])
-- parts_reference: Parts list (data: description, parts[{number,name,description}])`,
+    description: `Create an inline visual diagram. The diagram renders at the current position in your text. Call this DURING your answer text, not before it.
+Types:
+- polarity_setup: Socket connection diagram (data: processLabel, positiveLabel, negativeLabel, notes[])
+- duty_cycle: Duty cycle card with visual bar (data: current, inputVoltage, dutyCycle, restWindow, notes[])
+- troubleshooting: Numbered diagnostic checklist (data: symptom, checks[])
+- wiring_diagram: SVG connection diagram (data: description, connections[{from,to,label}], notes[])
+- comparison_table: Side-by-side table (data: columns[], rows[{label,values[]}], notes[])`,
     input_schema: {
       type: "object" as const,
       properties: {
         type: {
           type: "string",
-          enum: [
-            "polarity_setup",
-            "duty_cycle",
-            "troubleshooting",
-            "settings",
-            "wiring_diagram",
-            "page_reference",
-            "comparison_table",
-            "process_selector",
-            "parts_reference",
-          ],
+          enum: ["polarity_setup", "duty_cycle", "troubleshooting", "wiring_diagram", "comparison_table"],
         },
-        title: { type: "string", description: "Short title for the artifact" },
+        title: { type: "string", description: "Short title for the diagram" },
         data: {
           type: "object",
           description: "Artifact-specific data fields — see type descriptions",
@@ -153,28 +125,14 @@ async function executeToolCall(
 ): Promise<string> {
   switch (name) {
     case "search_manual": {
-      args.onStatus?.("Searching manual...");
       const hits = await searchManual(input.query as string, {
         processFilter: input.processFilter as
-          | "mig"
-          | "tig"
-          | "stick"
-          | "flux-cored"
-          | "any"
-          | undefined,
+          | "mig" | "tig" | "stick" | "flux-cored" | "any" | undefined,
         sourceKindFilter: input.sourceKindFilter as
-          | "text"
-          | "table"
-          | "diagram"
-          | "chart"
-          | "photo"
-          | "any"
-          | undefined,
+          | "text" | "table" | "diagram" | "chart" | "photo" | "any" | undefined,
       });
       state.searchHits.push(...hits);
-      if (hits.length === 0) {
-        return "No results found. Try a different query or broader terms.";
-      }
+      if (hits.length === 0) return "No results found. Try a different query.";
       return hits
         .slice(0, 6)
         .map(
@@ -185,7 +143,6 @@ async function executeToolCall(
     }
 
     case "get_page_content": {
-      args.onStatus?.("Reading page...");
       const store = await getKnowledgeStore();
       const page = store.pageMap.get(
         getPageKey(input.manualId as string, input.pageNumber as number)
@@ -195,7 +152,6 @@ async function executeToolCall(
     }
 
     case "build_artifact": {
-      args.onStatus?.("Building visual...");
       const data = (input.data as Record<string, unknown>) ?? {};
       const artifact = {
         type: input.type as string,
@@ -222,9 +178,7 @@ function chooseExcerptSentence(question: string, excerpt: string): string {
   if (sentences.length === 0) return excerpt.slice(0, 240);
 
   const questionTokens = new Set(
-    normalizeExcerptText(question)
-      .split(" ")
-      .filter((t) => t.length >= 2)
+    normalizeExcerptText(question).split(" ").filter((t) => t.length >= 2)
   );
 
   let best = sentences[0];
@@ -292,13 +246,7 @@ export async function answerQuestion(
       args.onStatus?.(turn === 0 ? "Thinking..." : "Continuing...");
 
       const stream = client.messages.stream(
-        {
-          model: MODEL,
-          max_tokens: 4096,
-          system: SYSTEM_PROMPT,
-          messages,
-          tools: TOOLS,
-        },
+        { model: MODEL, max_tokens: 4096, system: SYSTEM_PROMPT, messages, tools: TOOLS },
         { signal: args.signal }
       );
 
@@ -312,16 +260,9 @@ export async function answerQuestion(
           event.type === "content_block_start" &&
           event.content_block.type === "tool_use"
         ) {
-          const toolName = event.content_block.name;
-          const label =
-            toolName === "search_manual"
-              ? "Searching manual..."
-              : toolName === "build_artifact"
-                ? "Building visual..."
-                : toolName === "get_page_content"
-                  ? "Reading page..."
-                  : toolName;
-          args.onStatus?.(label);
+          const name = event.content_block.name;
+          if (name === "search_manual") args.onStatus?.("Searching manual...");
+          else if (name === "get_page_content") args.onStatus?.("Reading page...");
         }
       });
 
@@ -350,6 +291,11 @@ export async function answerQuestion(
           tool_use_id: block.id,
           content: result,
         });
+
+        if (block.name === "build_artifact") {
+          fullText += ARTIFACT_MARKER;
+          args.onTextDelta?.(ARTIFACT_MARKER);
+        }
       }
       messages.push({ role: "user", content: toolResults });
     }
@@ -364,8 +310,7 @@ export async function answerQuestion(
   if (!answer) {
     return {
       mode: "clarify",
-      answer:
-        "I could not find a grounded answer in the local manuals. Try asking with the welding process, input voltage, material, or symptom.",
+      answer: "I could not find a grounded answer in the local manuals. Try asking with the welding process, input voltage, material, or symptom.",
       citations: [],
       artifacts: [],
     };
