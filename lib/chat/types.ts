@@ -115,19 +115,12 @@ export type Artifact =
   | ProcessSelectorArtifact
   | PartsReferenceArtifact;
 
-export type ChatAnswer =
-  | {
-      mode: "clarify";
-      answer: string;
-      citations: Citation[];
-      artifact: null;
-    }
-  | {
-      mode: "answer";
-      answer: string;
-      citations: Citation[];
-      artifact: Artifact | null;
-    };
+export type ChatAnswer = {
+  mode: "clarify" | "answer";
+  answer: string;
+  citations: Citation[];
+  artifacts: Artifact[];
+};
 
 export type ChatRequest = {
   question: string;
@@ -138,22 +131,9 @@ export type ChatRequest = {
 };
 
 export type ChatStreamEvent =
-  | {
-      type: "status";
-      status: string;
-    }
-  | {
-      type: "text-delta";
-      delta: string;
-    }
-  | {
-      type: "final";
-      response: ChatAnswer;
-    }
-  | {
-      type: "error";
-      error: string;
-    }
-  | {
-      type: "done";
-    };
+  | { type: "status"; status: string }
+  | { type: "text-delta"; delta: string }
+  | { type: "artifact"; artifact: Artifact }
+  | { type: "final"; response: ChatAnswer }
+  | { type: "error"; error: string }
+  | { type: "done" };

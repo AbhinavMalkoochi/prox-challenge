@@ -11,10 +11,7 @@ function createEventChunk(event: ChatStreamEvent): string {
 export async function POST(request: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(
-      {
-        error:
-          "ANTHROPIC_API_KEY is not configured. Copy .env.example to .env and add your key.",
-      },
+      { error: "ANTHROPIC_API_KEY is not configured. Copy .env.example to .env and add your key." },
       { status: 500 }
     );
   }
@@ -44,12 +41,9 @@ export async function POST(request: Request) {
           question,
           history: body.history ?? [],
           signal: request.signal,
-          onStatus: async (status) => {
-            send({ type: "status", status });
-          },
-          onTextDelta: async (delta) => {
-            send({ type: "text-delta", delta });
-          },
+          onStatus: (status) => send({ type: "status", status }),
+          onTextDelta: (delta) => send({ type: "text-delta", delta }),
+          onArtifact: (artifact) => send({ type: "artifact", artifact }),
         });
 
         send({ type: "final", response });

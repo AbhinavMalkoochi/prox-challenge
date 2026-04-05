@@ -336,41 +336,16 @@ a:hover {
   line-height: 1.6;
 }
 
-/* polarity */
+/* polarity SVG */
 
-.polarity-diagram {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.socket {
-  border: 1px solid var(--border);
+.polarity-svg,
+.wiring-svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
   border-radius: var(--radius-sm);
-  padding: 14px;
-  text-align: center;
-}
-
-.socket span {
-  display: block;
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-}
-
-.socket strong {
-  display: block;
-  font-size: 0.95rem;
-}
-
-.socket.positive {
-  border-color: var(--positive);
-  background: var(--positive-soft);
-}
-
-.socket.negative {
-  border-color: var(--negative);
-  background: var(--negative-soft);
+  border: 1px solid var(--border);
+  overflow: visible;
 }
 
 /* stats grid */
@@ -388,6 +363,11 @@ a:hover {
   text-align: center;
 }
 
+.stat-card.accent {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .stat-card span {
   display: block;
   font-size: 0.72rem;
@@ -402,6 +382,84 @@ a:hover {
   display: block;
   font-size: 1rem;
   font-weight: 600;
+}
+
+/* duty bar */
+
+.duty-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.duty-bar {
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.duty-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+.duty-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* troubleshooting checklist */
+
+.symptom-badge {
+  margin: 0;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.check-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* comparison overflow */
+.comparison-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* lists */
@@ -717,7 +775,6 @@ a:hover {
     padding: 12px 16px;
   }
 
-  .polarity-diagram,
   .stats-grid {
     grid-template-columns: 1fr;
   }

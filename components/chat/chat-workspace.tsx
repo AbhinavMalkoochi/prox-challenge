@@ -18,7 +18,7 @@ type MessageRecord = {
   role: "user" | "assistant";
   content: string;
   citations: Citation[];
-  artifact: Artifact | null;
+  artifacts: Artifact[];
 };
 
 const SUGGESTIONS = [
@@ -81,7 +81,7 @@ export function ChatWorkspace() {
       role: "user",
       content: trimmed,
       citations: [],
-      artifact: null,
+      artifacts: [],
     };
     const assistantId = crypto.randomUUID();
     const assistantPlaceholder: MessageRecord = {
@@ -89,7 +89,7 @@ export function ChatWorkspace() {
       role: "assistant",
       content: "",
       citations: [],
-      artifact: null,
+      artifacts: [],
     };
 
     const nextMessages = [...messages, userMsg];
@@ -127,7 +127,7 @@ export function ChatWorkspace() {
             ...m,
             content: payload.answer,
             citations: payload.citations,
-            artifact: payload.mode === "answer" ? payload.artifact : null,
+            artifacts: payload.artifacts,
           }))
         );
         return;
@@ -161,16 +161,23 @@ export function ChatWorkspace() {
             scrollToBottom();
             continue;
           }
+          if (event.type === "artifact") {
+            setMessages((cur) =>
+              updateMessage(cur, assistantId, (m) => ({
+                ...m,
+                artifacts: [...m.artifacts, event.artifact],
+              }))
+            );
+            scrollToBottom();
+            continue;
+          }
           if (event.type === "final") {
             setMessages((cur) =>
               updateMessage(cur, assistantId, (m) => ({
                 ...m,
                 content: event.response.answer,
                 citations: event.response.citations,
-                artifact:
-                  event.response.mode === "answer"
-                    ? event.response.artifact
-                    : null,
+                artifacts: event.response.artifacts,
               }))
             );
             continue;
@@ -191,7 +198,7 @@ export function ChatWorkspace() {
               ? error.message
               : "The agent could not answer that question.",
           citations: [],
-          artifact: null,
+          artifacts: [],
         }))
       );
     } finally {
@@ -244,12 +251,14 @@ export function ChatWorkspace() {
                     {msg.content ||
                       (msg.role === "assistant" && isPending ? " " : "")}
                   </p>
-                  {msg.role === "assistant" && (
-                    <ArtifactPanel
-                      artifact={msg.artifact}
-                      showEmptyState={false}
-                    />
-                  )}
+                  {msg.role === "assistant" &&
+                    msg.artifacts.map((artifact, i) => (
+                      <ArtifactPanel
+                        artifact={artifact}
+                        key={`${artifact.type}-${i}`}
+                        showEmptyState={false}
+                      />
+                    ))}
                   <CitationLinks citations={msg.citations} />
                 </div>
               ))}
