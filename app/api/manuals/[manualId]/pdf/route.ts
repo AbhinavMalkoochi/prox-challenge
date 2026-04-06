@@ -19,14 +19,18 @@ export async function GET(_: Request, context: RouteContext) {
     return new NextResponse("Manual not found.", { status: 404 });
   }
 
-  const pdfBuffer = await readFile(
-    path.join(/* turbopackIgnore: true */ process.cwd(), FILES_DIRECTORY, manual.filename)
-  );
+  try {
+    const pdfBuffer = await readFile(
+      path.join(/* turbopackIgnore: true */ process.cwd(), FILES_DIRECTORY, manual.filename)
+    );
 
-  return new NextResponse(pdfBuffer, {
-    headers: {
-      "content-type": "application/pdf",
-      "content-disposition": `inline; filename="${manual.filename}"`
-    }
-  });
+    return new NextResponse(pdfBuffer, {
+      headers: {
+        "content-type": "application/pdf",
+        "content-disposition": `inline; filename="${manual.filename}"`
+      }
+    });
+  } catch {
+    return new NextResponse("PDF file not found on server.", { status: 500 });
+  }
 }
