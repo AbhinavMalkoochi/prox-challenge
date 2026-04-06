@@ -23,11 +23,14 @@ type SourcePageProps = {
 };
 
 export default async function SourcePage(props: SourcePageProps) {
+  console.log("[SourcePage] Start rendering");
   const params = await props.params;
   const searchParams = await props.searchParams;
   const pageNumber = Number(params.pageNumber);
+  console.log("[SourcePage] manualId:", params.manualId, "page:", pageNumber);
 
   if (!Number.isInteger(pageNumber) || pageNumber <= 0) {
+    console.log("[SourcePage] Invalid page number, returning notFound");
     notFound();
   }
 
@@ -36,13 +39,16 @@ export default async function SourcePage(props: SourcePageProps) {
     pageNumber,
     excerpt: searchParams.quote
   });
+  console.log("[SourcePage] sourcePage found:", !!sourcePage);
 
   if (!sourcePage) {
+    console.log("[SourcePage] sourcePage is null, returning notFound");
     notFound();
   }
 
   const highlights = getHighlightRects(sourcePage.page, sourcePage.excerpt);
   const pdfUrl = getManualPdfUrl(sourcePage.manualId);
+  console.log("[SourcePage] Rendering with pdfUrl:", pdfUrl, "highlights:", highlights.length);
 
   return (
     <main className="source-page-shell">
