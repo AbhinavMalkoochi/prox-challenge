@@ -8,6 +8,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 
 import type { Citation } from "@/lib/chat/types";
 import { citationAnchorId } from "@/lib/chat/source-anchor";
+import { getManualPdfUrl } from "@/lib/manuals";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
@@ -45,7 +46,7 @@ function PageThumbnail({
     let cancelled = false;
     async function render() {
       try {
-        const pdf = await loadPdf(`/api/manuals/${manualId}/pdf`);
+        const pdf = await loadPdf(getManualPdfUrl(manualId));
         if (cancelled) return;
         const page = await pdf.getPage(pageNumber);
         if (cancelled) return;
@@ -101,7 +102,7 @@ function ExpandedPage({
     let cancelled = false;
     async function render() {
       try {
-        const pdf = await loadPdf(`/api/manuals/${manualId}/pdf`);
+        const pdf = await loadPdf(getManualPdfUrl(manualId));
         if (cancelled) return;
         const page = await pdf.getPage(pageNumber);
         if (cancelled) return;

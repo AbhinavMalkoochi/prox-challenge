@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { SourceViewer } from "@/components/source/source-viewer";
 import { getHighlightRects } from "@/lib/knowledge/highlights";
 import { getSourcePage } from "@/lib/knowledge/source";
+import { getManualPdfUrl } from "@/lib/manuals";
 
 export const metadata: Metadata = {
   title: "Source View",
@@ -41,7 +42,7 @@ export default async function SourcePage(props: SourcePageProps) {
   }
 
   const highlights = getHighlightRects(sourcePage.page, sourcePage.excerpt);
-  const pdfUrl = `/api/manuals/${sourcePage.manualId}/pdf`;
+  const pdfUrl = getManualPdfUrl(sourcePage.manualId);
 
   return (
     <main className="source-page-shell">

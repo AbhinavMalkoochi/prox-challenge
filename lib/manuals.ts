@@ -32,3 +32,9 @@ export const MANUALS: ManualDefinition[] = [
 
 export const FILES_DIRECTORY = "files";
 export const GENERATED_DIRECTORY = "data/manual";
+
+/** Public URL path for a manual PDF (served from public/manuals/). */
+export function getManualPdfUrl(manualId: string): string {
+  const manual = MANUALS.find((m) => m.id === manualId);
+  return `/manuals/${manual?.filename ?? `${manualId}.pdf`}`;
+}

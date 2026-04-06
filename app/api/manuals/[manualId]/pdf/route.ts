@@ -1,9 +1,6 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import { NextResponse } from "next/server";
 
-import { FILES_DIRECTORY, MANUALS } from "@/lib/manuals";
+import { getManualPdfUrl, MANUALS } from "@/lib/manuals";
 
 type RouteContext = {
   params: Promise<{
@@ -11,7 +8,7 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(_: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const { manualId } = await context.params;
   const manual = MANUALS.find((entry) => entry.id === manualId);
 
@@ -19,18 +16,6 @@ export async function GET(_: Request, context: RouteContext) {
     return new NextResponse("Manual not found.", { status: 404 });
   }
 
-  try {
-    const pdfBuffer = await readFile(
-      path.join(/* turbopackIgnore: true */ process.cwd(), FILES_DIRECTORY, manual.filename)
-    );
-
-    return new NextResponse(pdfBuffer, {
-      headers: {
-        "content-type": "application/pdf",
-        "content-disposition": `inline; filename="${manual.filename}"`
-      }
-    });
-  } catch {
-    return new NextResponse("PDF file not found on server.", { status: 500 });
-  }
+  const origin = new URL(request.url).origin;
+  return NextResponse.redirect(`${origin}${getManualPdfUrl(manualId)}`);
 }

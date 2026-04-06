@@ -1,9 +1,6 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import MiniSearch from "minisearch";
 
-import { GENERATED_DIRECTORY } from "@/lib/manuals";
+import knowledgeBaseData from "@/data/manual/knowledge-base.json";
 import { normalizeExcerptText } from "@/lib/knowledge/excerpt-match";
 import type {
   ManualChunk,
@@ -20,20 +17,14 @@ export type KnowledgeStore = {
   avgDocLength: number;
 };
 
-let knowledgeStorePromise: Promise<KnowledgeStore> | undefined;
+let cachedStore: KnowledgeStore | undefined;
 
 function buildPageKey(manualId: string, pageNumber: number): string {
   return `${manualId}:${pageNumber}`;
 }
 
-async function loadKnowledgeBase(): Promise<ManualKnowledgeBase> {
-  const knowledgeBasePath = path.join(
-    process.cwd(),
-    GENERATED_DIRECTORY,
-    "knowledge-base.json"
-  );
-  const rawContent = await readFile(knowledgeBasePath, "utf8");
-  return JSON.parse(rawContent) as ManualKnowledgeBase;
+function loadKnowledgeBase(): ManualKnowledgeBase {
+  return knowledgeBaseData as ManualKnowledgeBase;
 }
 
 function computeIdfMap(chunks: ManualChunk[]): Map<string, number> {
@@ -66,8 +57,8 @@ function computeAvgDocLength(chunks: ManualChunk[]): number {
   return totalTokens / chunks.length;
 }
 
-async function createKnowledgeStore(): Promise<KnowledgeStore> {
-  const knowledgeBase = await loadKnowledgeBase();
+function createKnowledgeStore(): KnowledgeStore {
+  const knowledgeBase = loadKnowledgeBase();
   const searchIndex = new MiniSearch<ManualChunk>({
     fields: ["text", "title", "manualTitle"],
     storeFields: [
@@ -115,9 +106,9 @@ export function getPageKey(manualId: string, pageNumber: number): string {
   return buildPageKey(manualId, pageNumber);
 }
 
-export async function getKnowledgeStore(): Promise<KnowledgeStore> {
-  if (!knowledgeStorePromise) {
-    knowledgeStorePromise = createKnowledgeStore();
+export function getKnowledgeStore(): KnowledgeStore {
+  if (!cachedStore) {
+    cachedStore = createKnowledgeStore();
   }
-  return knowledgeStorePromise;
+  return cachedStore;
 }
