@@ -1,6 +1,5 @@
 # Vulcan OmniPro 220 Copilot
 
-<img src="product.webp" alt="Vulcan OmniPro 220" width="400" /> <img src="product-inside.webp" alt="Vulcan OmniPro 220 — inside panel" width="400" />
 
 Grounded multimodal support agent for the Vulcan OmniPro 220 welder. The app answers setup, polarity, duty cycle, troubleshooting, and settings questions with cited text, interactive visuals, and source-linked manual pages.
 
@@ -9,29 +8,23 @@ Grounded multimodal support agent for the Vulcan OmniPro 220 welder. The app ans
 - Main option: https://prox-challenge.vercel.app/
 - Repo: https://github.com/AbhinavMalkoochi/prox-challenge
 
-If you only try one thing, use the hosted site above. It is the fastest way to evaluate the agent end to end.
+If you only try one thing, use the hosted site above. 
 
 ## What I Built
-
-This project is a Next.js frontend plus a Claude-powered grounded agent for the Vulcan OmniPro 220. The UX is optimized for the way someone actually uses a welder manual in a garage:
 
 - ask a natural question
 - get a direct answer quickly
 - see an interactive visual when text alone is not enough
 - open the exact cited manual page with the relevant section highlighted
 
-The agent is not a generic chatbot sitting on top of a PDF. It uses a manual-specific retrieval layer, tool-driven visual responses, and source-aware citations so answers stay grounded.
-
 ## Why This Design
 
 The challenge emphasized four things: technical accuracy, multimodal responses, helpful tone, and knowledge extraction from mixed manual content. The design choices map directly to those goals.
 
-- Accuracy: every answer starts with retrieval, not generation.
-- Multimodality: visual tool calls are first-class, not an afterthought.
+- Accuracy: every answer starts with retrieval.
+- Multimodality: visual tool calls are extensive
 - Helpfulness: the system prompt biases toward practical, garage-side language.
 - Trust: every visual and text answer ties back to specific source pages.
-
-I intentionally did not build a broad general-purpose agent. I built a narrow, reliable copilot for one machine.
 
 ## How The Agent Works
 
@@ -58,8 +51,6 @@ The system prompt forces this sequence:
 4. call a visual tool whenever the question is better explained visually
 5. cite the supporting pages in the final answer
 
-That matters because many welding questions sound simple but actually require combining multiple sources. For example, a settings question may need the process chart, the polarity instructions, and the duty cycle table.
-
 ### 3. The model uses retrieval tools before responding
 
 The agent has two retrieval tools:
@@ -67,11 +58,10 @@ The agent has two retrieval tools:
 - `search_manual`
 - `get_page_content`
 
-This is deliberate. `search_manual` is fast and broad. `get_page_content` is a second pass when the top chunk is relevant but incomplete.
+ `search_manual` is fast and broad. `get_page_content` is a second pass when the top chunk is relevant but incomplete.
 
 ### 4. The model can call visual tools
 
-For the classes of questions where prose is not the best interface, the agent uses purpose-built render tools:
 
 - `render_duty_cycle`
 - `render_polarity_setup`
@@ -80,11 +70,11 @@ For the classes of questions where prose is not the best interface, the agent us
 - `render_weld_diagnosis`
 - `render_settings_advisor`
 
-These tools produce structured artifacts that the frontend renders inline. Each artifact carries source page references so the UI can jump the reviewer back to the manual evidence.
+ Each artifact carries source page references so the UI can jump the reviewer back to the manual evidence.
 
 ### 5. The frontend renders artifacts and source links inline
 
-Artifacts are rendered inside the conversation itself, not in a separate mode. This keeps the response compact and reviewable.
+Artifacts are rendered inside the conversation itself=
 
 The app supports:
 
@@ -93,8 +83,6 @@ The app supports:
 - Mermaid for flowcharts
 - HTML artifacts for richer single-file visuals
 - Markdown artifacts for structured documents
-
-This artifact pipeline was informed by the Claude artifacts reverse-engineering work documented in `reverse_engineering.md`.
 
 ## Knowledge Extraction And Representation
 
@@ -135,7 +123,7 @@ At runtime, the app loads `data/manual/knowledge-base.json` directly into memory
 
 ### Retrieval strategy
 
-Retrieval is hybrid, not single-pass.
+Retrieval is hybrid.
 
 The ranking stack combines:
 
@@ -146,8 +134,6 @@ The ranking stack combines:
 - metadata boosts for title, process, voltage, and source type relevance
 
 Then the results are deduplicated down to page-level hits so the agent gets a compact set of grounded sources rather than many overlapping chunks from the same page.
-
-This hybrid approach matters because welding questions frequently depend on exact numbers and terminology. A fuzzy-only retriever is too soft. A lexical-only retriever is too brittle. The combined scorer does a better job on exact amperage/voltage lookups and symptom queries.
 
 ## Source Experience
 
@@ -161,25 +147,12 @@ Each answer includes source cards that:
 - open a dedicated source page with highlight overlays
 - link directly to the raw PDF page
 
-This closes the loop between generated answer and underlying evidence. Reviewers can check the answer quickly instead of trusting the model on faith.
-
 ## Deployment Notes
 
 The app is deployed here:
 
 - https://prox-challenge.vercel.app/
 
-I also made the hosted version reviewer-friendly:
-
-- PDFs are served statically from `public/manuals/` for reliable Vercel delivery
-- the source page viewer avoids server-side loading of `pdfjs-dist`
-- knowledge data is bundled directly instead of relying on runtime filesystem reads
-
-Those choices were driven by reliability on Vercel, not just local development convenience.
-
-## Local Setup
-
-The project is designed to run within a couple of minutes.
 
 ### Requirements
 
@@ -258,8 +231,6 @@ npm run ingest
 - agentic browsing outside the manual corpus
 - autonomous long-running workflows
 
-That was a deliberate choice. For this challenge, depth on one product felt more valuable than breadth.
-
 ## Example Questions To Try
 
 - What polarity do I need for TIG welding?
@@ -278,8 +249,3 @@ This repo now aligns with the challenge requirements in the original prompt:
 - single-key local run flow included
 - multimodal responses included
 - grounded manual citations included
-
-## Additional Notes
-
-- Product page: https://www.harborfreight.com/omnipro-220-industrial-multiprocess-welder-with-120240v-input-57812.html
-- Supplemental video: https://www.youtube.com/watch?v=kxGDoGcnhBw
