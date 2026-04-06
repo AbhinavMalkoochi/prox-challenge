@@ -9,10 +9,13 @@ function createEventChunk(event: ChatStreamEvent): string {
 }
 
 export async function POST(request: Request) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const clientKey = request.headers.get("x-api-key") ?? undefined;
+  const apiKey = clientKey || process.env.ANTHROPIC_API_KEY;
+
+  if (!apiKey) {
     return Response.json(
-      { error: "ANTHROPIC_API_KEY is not configured. Copy .env.example to .env and add your key." },
-      { status: 500 }
+      { error: "No API key provided. Enter your Anthropic API key to get started." },
+      { status: 401 }
     );
   }
 
@@ -40,6 +43,7 @@ export async function POST(request: Request) {
         const response = await answerQuestion({
           question,
           history: body.history ?? [],
+          apiKey,
           signal: request.signal,
           onStatus: (status) => send({ type: "status", status }),
           onTextDelta: (delta) => send({ type: "text-delta", delta }),

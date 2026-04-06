@@ -3,26 +3,26 @@ import Anthropic from "@anthropic-ai/sdk";
 import { MANUALS } from "@/lib/manuals";
 import { searchManual, type SearchHit } from "@/lib/knowledge/search";
 import { getKnowledgeStore, getPageKey } from "@/lib/knowledge/store";
-import type {
-  AntArtifact,
-  ChatAnswer,
-  Citation,
+import {
+  ARTIFACT_MARKER,
+  type AntArtifact,
+  type ChatAnswer,
+  type Citation,
 } from "@/lib/chat/types";
 import { ArtifactStreamParser } from "@/lib/chat/artifact-parser";
 import { extractReferencedPages } from "@/lib/chat/extract-pages";
 import { executeVisualTool } from "@/lib/agent/visual-tools";
 
-const client = new Anthropic();
 const MODEL = "claude-haiku-4-5";
 /** Enough for multi-tool demos (search + many render_ calls + final answer). */
 const MAX_TURNS = 12;
-const ARTIFACT_MARKER = "\n\n{{ARTIFACT}}\n\n";
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
 
 type AnswerQuestionArgs = {
   question: string;
   history: ChatTurn[];
+  apiKey?: string;
   signal?: AbortSignal;
   onTextDelta?: (delta: string) => void;
   onStatus?: (status: string) => void;
@@ -56,13 +56,13 @@ You have six render_ tools. Call them instead of writing raw text when:
 
 • render_duty_cycle — ALWAYS call for duty cycle questions. Pass the exact ratings from the manual.
 • render_polarity_setup — ALWAYS call for polarity/cable connection questions. Pass which cables go where.
-• render_troubleshooting — ALWAYS call for troubleshooting or diagnosis questions. Pass all possible causes and solutions.
+• render_troubleshooting — ALWAYS call for troubleshooting or diagnosis questions. Pass all possible causes as checks.
 • render_setup_guide — ALWAYS call for "how do I set up" questions. Pass numbered steps.
-• render_specifications — Call for specs/capabilities questions. Pass the spec rows.
-• render_weld_diagnosis — Call for weld quality/diagnosis questions. Pass the issues with their causes and fixes.
+• render_weld_diagnosis — Call for weld quality/defect questions. Pass the issues with their causes and fixes.
+• render_settings_advisor — Call for "what settings should I use" questions. Pass material/thickness presets with recommended settings.
 
 RULES FOR VISUAL TOOLS:
-- You MUST call a render_ tool for any question involving duty cycles, polarity, troubleshooting, setup steps, specs, or weld diagnosis.
+- You MUST call a render_ tool for any question involving duty cycles, polarity, troubleshooting, setup steps, weld diagnosis, or recommended settings.
 - Fill tool parameters with EXACT data from the manual — never approximate.
 - Every render_ call MUST include sourcePages: an array of { manualId, pageNumber } copied from the search_manual / get_page_content results you used (at least one entry per visual).
 - In your text after each visual, cite those same pages (e.g. "see page 19") so Sources match the diagram.
@@ -285,6 +285,36 @@ const VISUAL_TOOLS: Anthropic.Tool[] = [
       required: ["weldType", "issues", "sourcePages"],
     },
   },
+  {
+    name: "render_settings_advisor",
+    description: "Render an interactive settings advisor where the user picks a material and thickness to see recommended welding parameters. Call for 'what settings should I use' questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        presets: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              material: { type: "string", description: "e.g. 'Mild Steel', 'Stainless Steel', 'Aluminum'" },
+              thickness: { type: "string", description: "e.g. '1/16\"', '1/8\"', '3/16\"', '1/4\"'" },
+              process: { type: "string", description: "Recommended process (MIG, TIG, Stick, Flux-Cored)" },
+              voltage: { type: "string", description: "Input voltage to use" },
+              amperage: { type: "string", description: "Recommended amperage range" },
+              wireSpeed: { type: "string", description: "Wire feed speed if applicable" },
+              gasFlow: { type: "string", description: "Gas flow rate if applicable" },
+              gasType: { type: "string", description: "Shielding gas type if applicable" },
+              electrode: { type: "string", description: "Electrode type/size if applicable" },
+              notes: { type: "string", description: "Any additional tips" },
+            },
+            required: ["material", "thickness", "process", "voltage", "amperage"],
+          },
+        },
+        sourcePages: SOURCE_PAGES_PROPERTY,
+      },
+      required: ["presets", "sourcePages"],
+    },
+  },
 ];
 
 const SEARCH_TOOLS: Anthropic.Tool[] = [
@@ -490,6 +520,7 @@ async function buildCitations(
 export async function answerQuestion(
   args: AnswerQuestionArgs
 ): Promise<ChatAnswer> {
+  const client = new Anthropic(args.apiKey ? { apiKey: args.apiKey } : undefined);
   const state: AgentRunState = { artifacts: [], searchHits: [] };
 
   const messages: Anthropic.MessageParam[] = [];

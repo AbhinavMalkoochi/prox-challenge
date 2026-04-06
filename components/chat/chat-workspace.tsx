@@ -1,19 +1,24 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Key, X } from "lucide-react";
 import Markdown from "react-markdown";
 
 import { ArtifactRenderer } from "@/components/chat/artifact-renderer";
 import { SourceCards } from "@/components/chat/source-cards";
 import { parseStreamChunk } from "@/lib/chat/stream";
+import { ARTIFACT_MARKER } from "@/lib/chat/types";
 import type {
   AntArtifact,
   ChatAnswer,
   Citation,
 } from "@/lib/chat/types";
 
-const ARTIFACT_MARKER = "{{ARTIFACT}}";
+function getStoredKey(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("anthropic-api-key") ?? "";
+}
+
 
 type MessageRecord = {
   id: string;
@@ -27,7 +32,7 @@ const SUGGESTIONS = [
   "What polarity do I need for TIG welding?",
   "Duty cycle for MIG at 200A on 240V?",
   "I'm getting porosity in my welds",
-  "Compare MIG vs flux-cored",
+  "Set up MIG for 1/8\" mild steel on 240V — settings, polarity, duty cycle, and porosity troubleshooting",
 ];
 
 function InlineContent({
@@ -98,7 +103,14 @@ export function ChatWorkspace() {
   const [isPending, setIsPending] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [messages, setMessages] = useState<MessageRecord[]>([]);
+  const [apiKey, setApiKey] = useState(getStoredKey);
+  const [showKeyInput, setShowKeyInput] = useState(false);
   const threadRef = useRef<HTMLDivElement>(null);
+
+  function saveKey(key: string) {
+    setApiKey(key);
+    localStorage.setItem("anthropic-api-key", key);
+  }
 
   function scrollToBottom() {
     requestAnimationFrame(() => {
@@ -139,7 +151,10 @@ export function ChatWorkspace() {
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          ...(apiKey ? { "x-api-key": apiKey } : {}),
+        },
         body: JSON.stringify({
           question: trimmed,
           history: nextMessages
@@ -245,8 +260,34 @@ export function ChatWorkspace() {
     <>
       <header className="app-header">
         <h1>Vulcan OmniPro 220</h1>
-        <span className="badge">Copilot</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span className="badge">Copilot</span>
+          <button
+            className="key-toggle"
+            onClick={() => setShowKeyInput(!showKeyInput)}
+            title={apiKey ? "API key set" : "Set API key"}
+            type="button"
+          >
+            <Key size={14} strokeWidth={2} />
+          </button>
+        </div>
       </header>
+
+      {showKeyInput && (
+        <div className="key-bar">
+          <input
+            autoFocus
+            className="key-input"
+            onChange={(e) => saveKey(e.target.value)}
+            placeholder="sk-ant-api03-…"
+            type="password"
+            value={apiKey}
+          />
+          <button className="key-dismiss" onClick={() => setShowKeyInput(false)} type="button">
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <section className="chat-app-shell">
         <div className="thread-panel" ref={threadRef}>

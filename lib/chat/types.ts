@@ -1,3 +1,5 @@
+export const ARTIFACT_MARKER = "\n\n{{ARTIFACT}}\n\n";
+
 /** Page in a manual that grounds an artifact or citation. */
 export type ArtifactSourceRef = {
   manualId: string;

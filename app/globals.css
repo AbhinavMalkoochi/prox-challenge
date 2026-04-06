@@ -91,6 +91,67 @@ a:hover {
   color: var(--accent);
 }
 
+.key-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.key-toggle:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.key-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-subtle);
+}
+
+.key-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-family: monospace;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.key-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.key-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.key-dismiss:hover {
+  color: var(--text);
+}
+
 .chat-app-shell {
   flex: 1;
   width: min(760px, 100%);

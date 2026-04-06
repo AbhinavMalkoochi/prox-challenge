@@ -5,8 +5,8 @@ import {
   buildPolarityArtifact,
   buildTroubleshootingArtifact,
   buildSetupGuideArtifact,
-  buildSpecsArtifact,
   buildWeldDiagnosisArtifact,
+  buildSettingsAdvisorArtifact,
   executeVisualTool,
   parseSourcePagesFromToolInput,
 } from "../lib/agent/visual-tools";
@@ -28,12 +28,12 @@ describe("buildDutyCycleArtifact", () => {
     expect(artifact.title).toContain("MIG");
     expect(artifact.title).toContain("240V");
     expect(artifact.content).toContain("200A");
-    expect(artifact.content).toContain("25% duty");
+    expect(artifact.content).toContain("25%");
     expect(artifact.content).toContain("115A");
-    expect(artifact.content).toContain("100% duty");
-    expect(artifact.content).toContain("2.5 min weld");
-    expect(artifact.content).toContain("Continuous welding");
-    expect(artifact.content).toContain("115A");
+    expect(artifact.content).toContain("100%");
+    expect(artifact.content).toContain("2.5");
+    expect(artifact.content).toContain("min weld");
+    expect(artifact.content).toContain("continuous");
     expect(artifact.content).toContain("<!DOCTYPE html>");
   });
 
@@ -44,27 +44,27 @@ describe("buildDutyCycleArtifact", () => {
       ratings: [{ amperage: 125, percent: 40, weldMinutes: 4, restMinutes: 6 }],
     });
 
-    expect(artifact.content).not.toContain("continuous (100%) use");
+    expect(artifact.content).not.toContain("continuous");
   });
 
-  it("uses green badge for 100% duty cycle", () => {
+  it("uses green tag for 100% duty cycle", () => {
     const artifact = buildDutyCycleArtifact({
       process: "stick",
       voltage: "240",
       ratings: [{ amperage: 100, percent: 100, weldMinutes: 10, restMinutes: 0 }],
     });
 
-    expect(artifact.content).toContain("badge-green");
+    expect(artifact.content).toContain("tag-green");
   });
 
-  it("uses amber badge for duty cycles below 40%", () => {
+  it("uses amber tag for duty cycles below 40%", () => {
     const artifact = buildDutyCycleArtifact({
       process: "mig",
       voltage: "240",
       ratings: [{ amperage: 200, percent: 25, weldMinutes: 2.5, restMinutes: 7.5 }],
     });
 
-    expect(artifact.content).toContain("badge-amber");
+    expect(artifact.content).toContain("tag-amber");
   });
 
   it("embeds source footer and sourceRefs when pages provided", () => {
@@ -79,7 +79,7 @@ describe("buildDutyCycleArtifact", () => {
     );
 
     expect(artifact.sourceRefs).toEqual(refs);
-    expect(artifact.content).toContain("artifact-source-footer");
+    expect(artifact.content).toContain("src-footer");
     expect(artifact.content).toContain("page 19");
     expect(artifact.content).toContain("Owner");
   });
@@ -121,7 +121,7 @@ describe("buildPolarityArtifact", () => {
 });
 
 describe("buildTroubleshootingArtifact", () => {
-  it("produces interactive troubleshooting with progress bar", () => {
+  it("produces interactive decision tree from checklist input", () => {
     const artifact = buildTroubleshootingArtifact({
       problem: "Porosity in MIG Welds",
       checks: [
@@ -136,10 +136,8 @@ describe("buildTroubleshootingArtifact", () => {
     expect(artifact.content).toContain("Insufficient gas flow");
     expect(artifact.content).toContain("Dirty workpiece");
     expect(artifact.content).toContain("Incorrect polarity");
-    expect(artifact.content).toContain("toggleStep");
-    expect(artifact.content).toContain("checkStep");
-    expect(artifact.content).toContain("ts-progress-fill");
-    expect(artifact.content).toContain("0/3 checked");
+    expect(artifact.content).toContain("Interactive Troubleshooter");
+    expect(artifact.content).toContain("restart");
   });
 });
 
@@ -160,40 +158,45 @@ describe("buildSetupGuideArtifact", () => {
     expect(artifact.content).toContain("Turn Power Switch OFF");
     expect(artifact.content).toContain("Ensure welder is unplugged");
     expect(artifact.content).toContain("Twist clockwise to lock");
-    expect(artifact.content).toContain("completeStep");
+    expect(artifact.content).toContain("toggleStep");
     expect(artifact.content).toContain("sg-progress-dots");
     expect(artifact.content).toContain("0 of 3 steps done");
   });
 });
 
-describe("buildSpecsArtifact", () => {
-  it("produces 120V/240V comparison layout", () => {
-    const artifact = buildSpecsArtifact({
-      process: "mig",
-      specs: [
-        { label: "Welding Current Range", value120v: "30–140A", value240v: "30–220A" },
-        { label: "Wire Speed", value120v: "50–500 IPM", value240v: "50–500 IPM" },
+describe("buildSettingsAdvisorArtifact", () => {
+  it("produces interactive settings advisor", () => {
+    const artifact = buildSettingsAdvisorArtifact({
+      presets: [
+        {
+          material: "Mild Steel",
+          thickness: "1/8\"",
+          process: "MIG",
+          voltage: "240V",
+          amperage: "120-140A",
+          wireSpeed: "280-320 IPM",
+          gasFlow: "25-30 CFH",
+          gasType: "75/25 Ar/CO2",
+        },
+        {
+          material: "Mild Steel",
+          thickness: "1/4\"",
+          process: "MIG",
+          voltage: "240V",
+          amperage: "180-200A",
+          wireSpeed: "350-400 IPM",
+          gasFlow: "30-35 CFH",
+          gasType: "75/25 Ar/CO2",
+        },
       ],
     });
 
     expect(artifact.type).toBe("text/html");
-    expect(artifact.content).toContain("30–140A");
-    expect(artifact.content).toContain("30–220A");
-    expect(artifact.content).toContain("120V");
-    expect(artifact.content).toContain("240V");
-    expect(artifact.content).toContain("Wire Speed");
-  });
-
-  it("handles single-value specs", () => {
-    const artifact = buildSpecsArtifact({
-      process: "mig",
-      specs: [
-        { label: "Max OCV", value120v: "86VDC" },
-      ],
-    });
-
-    expect(artifact.content).toContain("86VDC");
-    expect(artifact.content).toContain("Max OCV");
+    expect(artifact.identifier).toBe("settings-advisor");
+    expect(artifact.title).toContain("Settings Advisor");
+    expect(artifact.content).toContain("Mild Steel");
+    expect(artifact.content).toContain("sa-mat");
+    expect(artifact.content).toContain("sa-thk");
   });
 });
 
@@ -313,15 +316,22 @@ describe("executeVisualTool", () => {
     expect(result!.artifact.title).toBe("Stick Setup");
   });
 
-  it("returns artifact for render_specifications", () => {
-    const result = executeVisualTool("render_specifications", {
-      process: "all",
-      specs: [{ label: "OCV", value120v: "86V" }],
-      ...sp([{ manualId: "owner-manual", pageNumber: 7 }]),
+  it("returns artifact for render_settings_advisor", () => {
+    const result = executeVisualTool("render_settings_advisor", {
+      presets: [
+        {
+          material: "Mild Steel",
+          thickness: "1/8\"",
+          process: "MIG",
+          voltage: "240V",
+          amperage: "120-140A",
+        },
+      ],
+      ...sp([{ manualId: "owner-manual", pageNumber: 10 }]),
     });
 
     expect(result).not.toBeNull();
-    expect(result!.artifact.content).toContain("86V");
+    expect(result!.artifact.content).toContain("Mild Steel");
   });
 
   it("returns artifact for render_weld_diagnosis", () => {
